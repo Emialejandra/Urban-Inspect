@@ -76,12 +76,23 @@
       </ion-note>
     </ion-item>
 
-    <ion-item>
-      <ion-label>
-        <p><strong>Lat:</strong> {{ latitud }} | <strong>Lon:</strong> {{ longitud }}</p>
+
+    <!-- GPS -->
+    <ion-item lines="none">
+      <ion-label class="ion-text-wrap">
+        <h3>Ubicación del reporte</h3>
+        <p><strong>Latitud:</strong> {{ latitud }}</p>
+        <p><strong>Longitud:</strong> {{ longitud }}</p>
       </ion-label>
-      <ion-button size="small" color="secondary" (click)="obtenerUbicacionGPS()">Obtener GPS</ion-button>
+
+      <ion-button class="boton-gps" expand="block" type="button" (click)="obtenerUbicacionGPS()">
+
+        <ion-icon name="navigate-outline" slot="start"></ion-icon>
+        Obtener GPS
+
+      </ion-button>
     </ion-item>
+
 
     <ion-item lines="none">
       <ion-label>Evidencia Fotográfica (Obligatoria si es Alta)</ion-label>

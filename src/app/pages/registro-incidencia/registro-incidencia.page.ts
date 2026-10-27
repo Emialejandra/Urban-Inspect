@@ -11,6 +11,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Geolocation } from '@capacitor/geolocation';
 import { IncidenciaService } from '../../services/incidencias.service';
 import { ClimaService } from '../../services/clima.service';
+import { IonIcon } from '@ionic/angular';
 
 @Component({
   selector: 'app-registro-incidencia',
@@ -20,7 +21,7 @@ import { ClimaService } from '../../services/clima.service';
   imports: [
     CommonModule, FormsModule, IonHeader, IonToolbar, IonTitle, 
     IonContent, IonItem, IonLabel, IonButton, 
-    IonSelect, IonSelectOption, IonTextarea, IonInput, IonImg, IonNote
+    IonSelect, IonSelectOption, IonTextarea, IonInput, IonImg, IonNote, IonIcon
   ]
 })
 export class RegistroIncidenciaPage implements OnInit {

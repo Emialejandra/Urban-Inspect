@@ -5,21 +5,19 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-
   <div class="contenedor ion-padding">
 
     <h2>Registro de incidencias</h2>
     <p>Consulta y administra las incidencias registradas.</p>
 
-    <!-- Botón para ir al formulario de registro (R5/R10) -->
-    <ion-button expand="block" color="primary" routerLink="/registro-incidencia">
+    <ion-button class="boton-nueva" routerLink="/registro-incidencia" expand="block">
       <ion-icon name="add-circle-outline" slot="start"></ion-icon>
       Nueva incidencia
     </ion-button>
 
     <!-- Mensaje de error -->
     <div *ngIf="mensajeError" class="ion-padding ion-text-center">
-      <p color="danger">{{ mensajeError }}</p>
+      <p>{{ mensajeError }}</p>
       <ion-button (click)="reintentar()" expand="block">
         Reintentar
       </ion-button>
@@ -31,14 +29,15 @@
       <p>Cargando incidencias...</p>
     </div>
 
-    <!-- Lista principal de incidencias del Servidor -->
+    <!-- Incidencias del servidor -->
     <ion-list *ngIf="incidencias && incidencias.length > 0">
       <ion-list-header>
-        <ion-label>Incidencias del Servidor</ion-label>
+        <ion-label>Incidencias del servidor</ion-label>
       </ion-list-header>
 
       <ion-item *ngFor="let incidencia of incidencias">
-        <ion-icon name="alert-circle-outline" slot="start" color="warning"></ion-icon>
+        <ion-icon name="alert-circle-outline" slot="start" color="warning">
+        </ion-icon>
 
         <ion-label class="ion-text-wrap">
           <h2>{{ incidencia.codigo }} - {{ incidencia.tipo }}</h2>
@@ -48,24 +47,24 @@
           <p><strong>Fecha:</strong> {{ incidencia.fecha }}</p>
           <p><strong>Prioridad:</strong> {{ incidencia.prioridad }}</p>
           <p><strong>Estado:</strong> {{ incidencia.estado }}</p>
+
           <p *ngIf="incidencia.observacion">
             <strong>Observación:</strong> {{ incidencia.observacion }}
           </p>
 
           <img *ngIf="incidencia.fotografia" [src]="incidencia.fotografia" alt="Fotografía de la incidencia"
-            style="width: 100%; max-width: 250px; border-radius: 8px; margin-top: 8px;">
+            class="foto-incidencia">
         </ion-label>
 
-        <!-- Botones de acción en la fila (Adentro del bucle) -->
-        <div slot="end" style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
-          <ion-badge color="warning">{{ incidencia.estado }}</ion-badge>
-          
-          <!-- Botón R1: Seguimiento Local -->
+        <div slot="end" class="acciones-incidencia">
+          <ion-badge color="warning">
+            {{ incidencia.estado }}
+          </ion-badge>
+
           <ion-button size="small" color="tertiary" (click)="agregarSeguimiento(incidencia)">
             Seguir
           </ion-button>
 
-          <!-- Botón R8: Ver Detalle / Gestionar -->
           <ion-button size="small" fill="outline" color="primary" [routerLink]="['/detalle-incidencia', incidencia.id]">
             Detalle
           </ion-button>
@@ -73,30 +72,27 @@
       </ion-item>
     </ion-list>
 
-    <!-- Estado vacío de la API -->
+    <!-- Estado vacío -->
     <div *ngIf="!cargando && !mensajeError && incidencias.length === 0" class="ion-text-center ion-padding">
       <p>No hay incidencias registradas en el servidor.</p>
     </div>
 
-    <!-- Cargar más (Paginación R3) -->
+    <!-- Paginación -->
     <ion-button *ngIf="hayMasIncidencias && !cargando && !mensajeError" expand="block" fill="outline"
       (click)="cargarIncidencias()" class="ion-margin-top">
       Cargar más incidencias
     </ion-button>
 
+    <hr class="separador-seccion">
 
-    <!-- ========================================== -->
-    <!-- SECCIÓN DE SEGUIMIENTO LOCAL (R1)          -->
-    <!-- ========================================== -->
-    <hr style="margin: 30px 0; border: 0; border-top: 1px solid #ccc;">
-
-    <h2>Mis Incidencias en Seguimiento Local</h2>
-    <p>Registros guardados en el dispositivo (Offline).</p>
+    <!-- Seguimiento local -->
+    <h2>Mis incidencias en seguimiento local</h2>
+    <p>Registros guardados en el dispositivo (offline).</p>
 
     <ion-list *ngIf="incidenciasLocales && incidenciasLocales.length > 0">
       <ion-item *ngFor="let local of incidenciasLocales">
         <ion-label class="ion-text-wrap">
-          <h2>📌 {{ local.codigo }} - {{ local.tipo }}</h2>
+          <h2>{{ local.codigo }} - {{ local.tipo }}</h2>
           <p>{{ local.descripcion }}</p>
           <p><strong>Sector:</strong> {{ local.sector }}</p>
         </ion-label>
@@ -108,5 +104,4 @@
     </div>
 
   </div>
-
 </ion-content>

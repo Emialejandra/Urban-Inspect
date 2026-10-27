@@ -1,9 +1,19 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { 
-  IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonListHeader,
-  IonItem, IonLabel, IonButton, IonIcon, IonBadge, IonSpinner 
+import { RouterLink, Router } from '@angular/router';
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonList,
+  IonListHeader,
+  IonItem,
+  IonLabel,
+  IonButton,
+  IonIcon,
+  IonBadge,
+  IonSpinner
 } from '@ionic/angular';
 import { IncidenciaService } from '../../services/incidencias.service';
 
@@ -13,11 +23,12 @@ import { IncidenciaService } from '../../services/incidencias.service';
   styleUrls: ['./incidencias.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, RouterLink, IonHeader, IonToolbar, IonTitle, 
-    IonContent, IonList, IonListHeader, IonItem, IonLabel, 
+    CommonModule, RouterLink, IonHeader, IonToolbar, IonTitle,
+    IonContent, IonList, IonListHeader, IonItem, IonLabel,
     IonButton, IonIcon, IonBadge, IonSpinner
   ]
 })
+
 export class IncidenciasPage implements OnInit {
   private incidenciaService = inject(IncidenciaService);
 
