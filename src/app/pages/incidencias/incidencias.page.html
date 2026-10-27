@@ -1,0 +1,77 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Gestión de incidencias</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <div class="contenedor">
+
+    <h2>Registro de incidencias</h2>
+    <p>Consulta y administra las incidencias registradas.</p>
+
+    <ion-button expand="block" color="primary">
+      <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+      Nueva incidencia
+    </ion-button>
+
+    <!-- Mensaje de error -->
+    <div *ngIf="mensajeError">
+      <p>{{ mensajeError }}</p>
+      <ion-button (click)="reintentar()" expand="block">
+        Reintentar
+      </ion-button>
+    </div>
+
+    <!-- Indicador de carga -->
+    <div *ngIf="cargando" class="estado-carga">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando incidencias...</p>
+    </div>
+
+    <!-- Lista de incidencias -->
+    <ion-list>
+      <ion-list-header>
+        <ion-label>Incidencias registradas</ion-label>
+      </ion-list-header>
+
+      <ion-item *ngFor="let incidencia of incidencias">
+        <ion-icon name="alert-circle-outline" slot="start" color="warning">
+        </ion-icon>
+
+        <ion-label>
+          <h2>{{ incidencia.codigo }} - {{ incidencia.tipo }}</h2>
+          <p>{{ incidencia.descripcion }}</p>
+          <p><strong>Dirección:</strong> {{ incidencia.direccion }}</p>
+          <p><strong>Sector:</strong> {{ incidencia.sector }}</p>
+          <p><strong>Fecha:</strong> {{ incidencia.fecha }}</p>
+          <p><strong>Prioridad:</strong> {{ incidencia.prioridad }}</p>
+          <p><strong>Estado:</strong> {{ incidencia.estado }}</p>
+          <p *ngIf="incidencia.observacion">
+            <strong>Observación:</strong> {{ incidencia.observacion }}
+          </p>
+
+          <img *ngIf="incidencia.fotografia" [src]="incidencia.fotografia" alt="Fotografía de la incidencia"
+            style="width: 100%; max-width: 250px; border-radius: 8px; margin-top: 8px;">
+        </ion-label>
+
+        <ion-badge color="warning">{{ incidencia.estado }}</ion-badge>
+      </ion-item>
+      
+    </ion-list>
+
+    <!-- Estado vacío -->
+    <div *ngIf="!cargando && !mensajeError && incidencias.length === 0">
+      <p>No hay incidencias registradas.</p>
+    </div>
+
+    <!-- Cargar más -->
+    <ion-button *ngIf="hayMasIncidencias && !cargando && !mensajeError" expand="block" fill="outline"
+      (click)="cargarIncidencias()">
+      Cargar más incidencias
+    </ion-button>
+
+  </div>
+
+</ion-content>
