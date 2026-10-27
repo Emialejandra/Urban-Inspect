@@ -1,62 +1,108 @@
+
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, from, map } from 'rxjs';
-import { Preferences } from '@capacitor/preferences'; // <--- Importar Capacitor Preferences
+import { Observable, firstValueFrom } from 'rxjs';
+import { Preferences } from '@capacitor/preferences';
+import {
+  Incidencia,
+  EstadoIncidencia
+} from '../models/incidencia.model';
+
+export type { Incidencia } from '../models/incidencia.model';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class IncidenciaService {
-    private http = inject(HttpClient);
-    private apiUrl = 'https://678732c2c4ada42c916d2524.mockapi.io/api/v1/incidencias';
+  private http = inject(HttpClient);
 
-    // Métodos existentes para MockAPI...
-    obtenerIncidencias(): Observable<any[]> {
-        return this.http.get<any[]>(this.apiUrl);
+  private apiUrl =
+    'https://6ae00c298e42963c8d5ec79b.mockapi.io/incidencias';
+
+  private cloudName = 'dbuttvfar';
+  private uploadPreset = 'Urban-Inspect';
+
+  async subirFotografia(archivo: File): Promise<string> {
+    if (!archivo.type.startsWith('image/')) {
+      throw new Error('Selecciona una imagen válida.');
     }
 
-    crearIncidencia(incidencia: any): Observable<any> {
-        return this.http.post<any>(this.apiUrl, incidencia);
+    const formulario = new FormData();
+    formulario.append('file', archivo);
+    formulario.append('upload_preset', this.uploadPreset);
+
+    const respuesta = await firstValueFrom(
+      this.http.post<{ secure_url: string }>(
+        `https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`,
+        formulario
+      )
+    );
+
+    if (!respuesta?.secure_url) {
+      throw new Error('No se pudo obtener la URL de la fotografía.');
     }
 
-    // --- R1: MÉTODOS PARA SEGUIMIENTO LOCAL (OFFLINE) ---
+    return respuesta.secure_url;
+  }
 
-    // Guardar una incidencia en el almacenamiento local del teléfono
-    async guardarSeguimientoLocal(incidencia: any): Promise<void> {
-        const actual = await this.obtenerSeguimientoLocal();
-        // Evitar duplicados basados en el código
-        const existe = actual.some((item: any) => item.codigo === incidencia.codigo);
-        if (!existe) {
-            actual.push(incidencia);
-            await Preferences.set({
-                key: 'urbaninspect_seguimiento',
-                value: JSON.stringify(actual)
-            });
-        }
-    }
+  obtenerIncidencias(): Observable<Incidencia[]> {
+    return this.http.get<Incidencia[]>(this.apiUrl);
+  }
 
-    // Obtener la lista de incidencias guardadas localmente
-    async obtenerSeguimientoLocal(): Promise<any[]> {
-        const { value } = await Preferences.get({ key: 'urbaninspect_seguimiento' });
-        return value ? JSON.parse(value) : [];
-    }
+  obtenerIncidenciaPorId(id: string): Observable<Incidencia> {
+    return this.http.get<Incidencia>(`${this.apiUrl}/${id}`);
+  }
 
-    // Eliminar una incidencia del seguimiento local
-    async eliminarSeguimientoLocal(codigo: string): Promise<any[]> {
-        let actual = await this.obtenerSeguimientoLocal();
-        actual = actual.filter((item: any) => item.codigo !== codigo);
-        await Preferences.set({
-            key: 'urbaninspect_seguimiento',
-            value: JSON.stringify(actual)
-        });
-        return actual;
-    }
+  crearIncidencia(incidencia: Incidencia): Observable<Incidencia> {
+    return this.http.post<Incidencia>(this.apiUrl, incidencia);
+  }
 
-    obtenerIncidenciaPorId(id: string): Observable<any> {
-        return this.http.get<any>(`${this.apiUrl}/${id}`);
-    }
+  actualizarIncidencia(
+    id: string,
+    incidencia: Partial<Incidencia>
+  ): Observable<Incidencia> {
+    return this.http.put<Incidencia>(
+      `${this.apiUrl}/${id}`,
+      incidencia
+    );
+  }
 
-    actualizarIncidencia(id: string, incidencia: any): Observable<any> {
-        return this.http.put<any>(`${this.apiUrl}/${id}`, incidencia);
+  async guardarSeguimientoLocal(incidencia: Incidencia): Promise<void> {
+    const actual = await this.obtenerSeguimientoLocal();
+    const existe = actual.some(item => item.codigo === incidencia.codigo);
+
+    if (!existe) {
+      actual.push(incidencia);
+      await Preferences.set({
+        key: 'urbaninspect_seguimiento',
+        value: JSON.stringify(actual)
+      });
     }
+  }
+
+  async obtenerSeguimientoLocal(): Promise<Incidencia[]> {
+    const { value } = await Preferences.get({
+      key: 'urbaninspect_seguimiento'
+    });
+
+    if (!value) return [];
+
+    try {
+      return JSON.parse(value) as Incidencia[];
+    } catch {
+      return [];
+    }
+  }
+
+  async eliminarSeguimientoLocal(codigo: string): Promise<Incidencia[]> {
+    const actual = await this.obtenerSeguimientoLocal();
+    const filtradas = actual.filter(item => item.codigo !== codigo);
+
+    await Preferences.set({
+      key: 'urbaninspect_seguimiento',
+      value: JSON.stringify(filtradas)
+    });
+
+    return filtradas;
+  }
 }

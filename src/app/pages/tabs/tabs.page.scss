@@ -1,25 +1,24 @@
 .custom-tab-bar {
-  background: #ffffff;
-  border-top: 1px solid #e2e8f0;
-  padding-bottom: 6px;
-  padding-top: 6px;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  --background: #ffffff;
+  --border: 1px solid #e2e8f0;
+  height: calc(62px + env(safe-area-inset-bottom));
+  padding: 5px 4px calc(5px + env(safe-area-inset-bottom));
+  box-shadow: 0 -5px 22px rgba(22, 43, 78, 0.08);
 
   ion-tab-button {
     --color: #64748b;
-    --color-selected: #2563eb;
+    --color-selected: #2457c5;
     font-weight: 500;
     font-size: 0.75rem;
 
     ion-icon {
-      font-size: 22px;
-      margin-bottom: 2px;
+      font-size: 21px;
     }
 
     /* Destacar el botón central de Registro */
     .icon-central {
-      font-size: 36px;
-      color: #2563eb;
+      font-size: 27px;
+      color: #2457c5;
     }
   }
 }

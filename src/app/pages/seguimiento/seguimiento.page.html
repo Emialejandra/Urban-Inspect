@@ -1,51 +1,71 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar color="light">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/incidencias" text=""></ion-back-button>
-    </ion-buttons>
-    <ion-title>Seguimiento Local</ion-title>
+
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Seguimiento</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="actualizar($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
-  <!-- Header con resumen visual estilo App Store -->
-  <div class="header-banner ion-padding">
-    <h2>📌 Mis Incidencias Guardadas</h2>
-    <p>Registros almacenados localmente en tu dispositivo para consulta offline.</p>
+  <div class="encabezado">
+    <h2>Mis incidencias</h2>
+    <p>Consulta el estado de los reportes guardados en este dispositivo.</p>
   </div>
 
-  <!-- Estado de Carga / Sin datos -->
-  <div *ngIf="incidenciasLocales.length === 0" class="empty-state ion-text-center ion-padding">
-    <ion-icon name="bookmark-outline" class="empty-icon"></ion-icon>
-    <h3>No tienes registros guardados</h3>
-    <p>Guarda incidencias desde el listado general para hacerles seguimiento local sin internet.</p>
+  <div *ngIf="cargando" class="centrado">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando incidencias...</p>
   </div>
 
-  <!-- Tarjetas elegantes para cada incidencia guardada -->
-  <ion-card *ngFor="let local of incidenciasLocales">
+  <div *ngIf="!cargando && incidencias.length === 0" class="vacio">
+    <ion-icon name="document-text-outline"></ion-icon>
+    <h3>Sin incidencias</h3>
+    <p>Todavía no hay incidencias disponibles.</p>
+  </div>
+
+  <ion-card
+    *ngFor="let incidencia of incidencias"
+    button
+    (click)="verDetalle(incidencia)">
+
+    <img
+      *ngIf="incidencia.fotografia"
+      [src]="incidencia.fotografia"
+      [alt]="incidencia.titulo || incidencia.tipo || 'Incidencia'">
+
     <ion-card-header>
-      <div class="card-top-bar">
-        <ion-badge color="primary">{{ local.codigo }}</ion-badge>
-        <span class="fecha-badge">{{ local.fecha }}</span>
-      </div>
-      <ion-card-title>{{ local.tipo }}</ion-card-title>
-      <ion-card-subtitle>{{ local.sector }}</ion-card-subtitle>
+      <ion-card-subtitle>
+        {{ incidencia.codigo }}
+      </ion-card-subtitle>
+
+      <ion-card-title>
+        {{ incidencia.titulo || incidencia.tipo || 'Reporte ciudadano' }}
+      </ion-card-title>
     </ion-card-header>
 
     <ion-card-content>
-      <p class="descripcion-texto">{{ local.descripcion }}</p>
-      
-      <!-- Imagen con aspecto pulido -->
-      <img *ngIf="local.fotografia" [src]="local.fotografia" class="foto-evidencia" alt="Evidencia fotográfica" />
+      <p>{{ incidencia.descripcion }}</p>
 
-      <div class="card-footer-actions ion-margin-top">
-        <ion-button fill="clear" color="danger" size="small" (click)="quitarSeguimiento(local.codigo)">
-          <ion-icon name="trash-outline" slot="start"></ion-icon>
-          Quitar de lista
-        </ion-button>
-      </div>
+      <p>
+        <ion-icon name="location-outline"></ion-icon>
+        {{ incidencia.ubicacion || incidencia.direccion || incidencia.sector || 'Ubicación no especificada' }}
+      </p>
+
+      <ion-chip [color]="estadoColor(incidencia.estado)">
+        {{ incidencia.estado || 'Pendiente' }}
+      </ion-chip>
+
+      <p *ngIf="incidencia.fecha">
+        {{ incidencia.fecha | date:'dd/MM/yyyy HH:mm' }}
+      </p>
+
+      <ion-button fill="clear">
+        Ver detalle
+        <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+      </ion-button>
     </ion-card-content>
   </ion-card>
-
 </ion-content>

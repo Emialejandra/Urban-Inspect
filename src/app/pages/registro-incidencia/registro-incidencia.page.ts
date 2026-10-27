@@ -1,161 +1,186 @@
-import { Component, inject, OnInit } from '@angular/core';
+
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { AlertController} from '@ionic/angular';
+import { firstValueFrom } from 'rxjs';
+import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonSelect, IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar } from '@ionic/angular';
+import {
+  Incidencia,
+  IncidenciaService
+} from '../../services/incidencias.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { addIcons } from 'ionicons';
-import { navigateOutline } from 'ionicons/icons';
-import {
-  IonHeader, IonToolbar, IonTitle, IonContent, IonItem,
-  IonLabel, IonButton, IonSelect, IonSelectOption,
-  IonTextarea, IonInput, IonImg, IonNote, IonIcon
-} from '@ionic/angular';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { Geolocation } from '@capacitor/geolocation';
-import { IncidenciaService } from '../../services/incidencias.service';
-import { ClimaService } from '../../services/clima.service';
-addIcons({
-  'navigate-outline': navigateOutline
-});
+import { Ubicacion } from '../../services/ubicacion';
 @Component({
   selector: 'app-registro-incidencia',
   templateUrl: './registro-incidencia.page.html',
   styleUrls: ['./registro-incidencia.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, IonHeader, IonToolbar, IonTitle,
-    IonContent, IonItem, IonLabel, IonButton,
-    IonSelect, IonSelectOption, IonTextarea, IonInput, IonImg, IonNote, IonIcon
+    CommonModule,
+    FormsModule,
+    IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonSelect,
+    IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar
   ]
 })
-export class RegistroIncidenciaPage implements OnInit {
-  private incidenciaService = inject(IncidenciaService);
-  private climaService = inject(ClimaService);
-  private router = inject(Router);
+export class RegistroIncidenciaPage {
+  titulo = '';
+  descripcion = '';
+  categoria = '';
+  ubicacion = '';
 
-  // Campos del formulario
-  tipo: string = '';
-  descripcion: string = '';
-  direccion: string = '';
-  sector: string = '';
-  prioridad: string = 'media';
-  fotografia: string = '';
+  archivo: File | null = null;
+  vistaPrevia: string | null = null;
+  coordenadas: { latitud: number; longitud: number } | null = null;
 
-  // Datos de GPS y Clima
-  latitud: number | null = null;
-  longitud: number | null = null;
-  climaActual: any = null;
-  advertenciaLluvia: string = '';
-  cargando: boolean = false;
+  guardando = false;
 
-  ngOnInit() {
-    this.obtenerUbicacionGPS();
-  }
+  constructor(
+    private incidenciaService: IncidenciaService,
+    private ubicacionService: Ubicacion,
+    private alertController: AlertController,
+    private router: Router
+  ) { }
 
-  // R7: Obtener Ubicación GPS con Capacitor
-  async obtenerUbicacionGPS() {
-    try {
-      const coordinates = await Geolocation.getCurrentPosition();
-      this.latitud = coordinates.coords.latitude;
-      this.longitud = coordinates.coords.longitude;
-      this.consultarClima();
-    } catch (error) {
-      console.error('Error obteniendo ubicación GPS:', error);
-      this.latitud = -0.1807;
-      this.longitud = -78.4678;
-      this.consultarClima();
-    }
-  }
+  onArchivoSeleccionado(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const archivo = input.files?.[0];
 
-  // R6: Tomar foto con la Cámara de Capacitor
-  async tomarFoto() {
-    try {
-      const image = await Camera.getPhoto({
-        quality: 90,
-        allowEditing: false,
-        resultType: CameraResultType.DataUrl,
-        source: CameraSource.Prompt
-      });
-
-      if (image && image.dataUrl) {
-        this.fotografia = image.dataUrl;
-      }
-    } catch (error) {
-      console.error('Error al capturar la fotografía:', error);
-    }
-  }
-
-  // Consultar Clima
-
-  consultarClima() {
-    if (this.latitud === null || this.longitud === null) {
+    if (!archivo) {
       return;
     }
 
-    this.climaService.obtenerClima(this.latitud, this.longitud).subscribe({
-      next: (data: any) => {
-        // El servicio ya transforma la respuesta de OpenWeather.
-        if (!data) {
-          this.climaActual = null;
-          this.advertenciaLluvia = '';
-          return;
-        }
-
-        this.climaActual = {
-          temperatura: data.temperatura,
-          descripcion: data.descripcion,
-          precipitacion: data.precipitacion ?? 0
-        };
-
-        if (this.climaActual.precipitacion > 2) {
-          this.advertenciaLluvia =
-            '⚠️ Alerta meteorológica: Se registran precipitaciones fuertes en la zona.';
-        } else {
-          this.advertenciaLluvia = '';
-        }
-      },
-      error: (err: any) => {
-        console.warn('No se pudo consultar el clima:', err);
-        this.climaActual = null;
-        this.advertenciaLluvia = '';
-      }
-    });
-  }
-
-
-  // Guardar Incidencia y enviarla a la MockAPI
-  guardarIncidencia() {
-    if (!this.tipo || !this.descripcion || !this.sector) {
-      alert('Por favor complete los campos obligatorios (Tipo, Descripción y Sector).');
+    if (!archivo.type.startsWith('image/')) {
+      this.mostrarAlerta('Archivo inválido', 'Selecciona una fotografía.');
+      input.value = '';
       return;
     }
 
-    const nuevaIncidencia = {
-      codigo: 'INC-' + Math.floor(1000 + Math.random() * 9000),
-      tipo: this.tipo,
-      descripcion: this.descripcion,
-      direccion: this.direccion || 'No especificada',
-      sector: this.sector,
-      prioridad: this.prioridad,
-      estado: 'pendiente',
-      fecha: new Date().toISOString().split('T')[0],
-      latitud: this.latitud,
-      longitud: this.longitud,
-      fotografia: this.fotografia,
-      observacion: ''
-    };
+    if (archivo.size > 10 * 1024 * 1024) {
+      this.mostrarAlerta(
+        'Imagen demasiado grande',
+        'Selecciona una fotografía de máximo 10 MB.'
+      );
+      input.value = '';
+      return;
+    }
 
-    this.cargando = true;
-    this.incidenciaService.crearIncidencia(nuevaIncidencia).subscribe({
-      next: () => {
-        this.cargando = false;
-        alert('¡Incidencia registrada con éxito!');
-        this.router.navigate(['/incidencias']);
-      },
-      error: (err: any) => {
-        this.cargando = false;
-        console.error('Error al guardar la incidencia:', err);
-        alert('Hubo un error al registrar la incidencia en el servidor.');
+    this.archivo = archivo;
+    this.vistaPrevia = URL.createObjectURL(archivo);
+  }
+
+  async usarMiUbicacion(): Promise<void> {
+    try {
+      this.coordenadas = await this.ubicacionService.obtenerCoordenadas();
+      if (!this.ubicacion.trim()) {
+        this.ubicacion = `${this.coordenadas.latitud.toFixed(5)}, ${this.coordenadas.longitud.toFixed(5)}`;
       }
+    } catch {
+      await this.mostrarAlerta(
+        'Ubicación no disponible',
+        'Activa el GPS y permite el acceso a la ubicación para volver a intentarlo.'
+      );
+    }
+  }
+
+  async registrarIncidencia(): Promise<void> {
+    if (
+      !this.titulo.trim() ||
+      !this.descripcion.trim() ||
+      !this.categoria ||
+      !this.ubicacion.trim()
+    ) {
+      await this.mostrarAlerta(
+        'Campos obligatorios',
+        'Completa todos los campos del formulario.'
+      );
+      return;
+    }
+
+    if (!this.archivo) {
+      await this.mostrarAlerta(
+        'Fotografía requerida',
+        'Selecciona una fotografía de la incidencia.'
+      );
+      return;
+    }
+
+    this.guardando = true;
+
+    try {
+      // 1. Subir la fotografía a Cloudinary.
+      const urlFotografia =
+        await this.incidenciaService.subirFotografia(this.archivo);
+
+      // 2. Preparar los datos de la incidencia.
+      const incidencia: Incidencia = {
+        codigo: 'INC-' + Date.now().toString().slice(-8),
+        tipo: this.categoria,
+        titulo: this.titulo.trim(),
+        descripcion: this.descripcion.trim(),
+        categoria: this.categoria,
+        direccion: this.ubicacion.trim(),
+        ubicacion: this.ubicacion.trim(),
+        sector: this.ubicacion.trim(),
+        fotografia: urlFotografia,
+        estado: 'Pendiente',
+        fecha: new Date().toISOString(),
+        prioridad: 'media',
+        latitud: this.coordenadas?.latitud ?? null,
+        longitud: this.coordenadas?.longitud ?? null
+      };
+
+      // 3. Guardar los datos en MockAPI.
+      const guardada = await firstValueFrom(
+        this.incidenciaService.crearIncidencia(incidencia)
+      );
+
+      // 4. Añadirla al seguimiento local.
+      await this.incidenciaService.guardarSeguimientoLocal(guardada);
+
+      await this.mostrarAlerta(
+        'Incidencia registrada',
+        'La fotografía se subió y la incidencia se guardó correctamente.'
+      );
+
+      this.limpiarFormulario();
+
+      // Navegar al seguimiento.
+      await this.router.navigate(['/seguimiento']);
+
+    } catch (error: any) {
+      const mensaje =
+        error?.error?.error?.message ||
+        error?.error?.message ||
+        error?.message ||
+        'No se pudo registrar la incidencia.';
+
+      await this.mostrarAlerta('Error al registrar', mensaje);
+    } finally {
+      this.guardando = false;
+    }
+  }
+
+  private limpiarFormulario(): void {
+    this.titulo = '';
+    this.descripcion = '';
+    this.categoria = '';
+    this.ubicacion = '';
+    this.archivo = null;
+    this.vistaPrevia = null;
+    this.coordenadas = null;
+  }
+
+  private async mostrarAlerta(
+    encabezado: string,
+    mensaje: string
+  ): Promise<void> {
+    const alerta = await this.alertController.create({
+      header: encabezado,
+      message: mensaje,
+      buttons: ['Aceptar']
     });
+
+    await alerta.present();
   }
 }

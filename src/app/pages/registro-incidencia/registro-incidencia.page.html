@@ -1,107 +1,93 @@
+
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>Nueva Incidencia</ion-title>
+    <ion-title>Registrar incidencia</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <form (ngSubmit)="guardarIncidencia()">
+  <div class="formulario">
+    <h2>Reportar un problema</h2>
+    <p>Describe lo ocurrido y adjunta una fotografía.</p>
 
-    <!-- Tipo de incidencia -->
     <ion-item>
-      <ion-select label="Tipo de incidencia" labelPlacement="stacked" [(ngModel)]="tipo" name="tipo" required>
-        <ion-select-option value="Luminaria dañada">Luminaria dañada</ion-select-option>
-        <ion-select-option value="Bache">Bache</ion-select-option>
-        <ion-select-option value="Señalización deteriorada">Señalización deteriorada</ion-select-option>
-        <ion-select-option value="Alcantarilla obstruida">Alcantarilla obstruida</ion-select-option>
-        <ion-select-option value="Daños en parques">Daños en parques</ion-select-option>
+      <ion-input
+        label="Título"
+        labelPlacement="stacked"
+        placeholder="Ej. Luminaria dañada"
+        [(ngModel)]="titulo"
+        maxlength="100">
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-textarea
+        label="Descripción"
+        labelPlacement="stacked"
+        placeholder="Describe el problema..."
+        [(ngModel)]="descripcion"
+        rows="4"
+        maxlength="1000">
+      </ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-select
+        label="Categoría"
+        labelPlacement="stacked"
+        placeholder="Selecciona una categoría"
+        [(ngModel)]="categoria">
+        <ion-select-option value="Alumbrado">Alumbrado público</ion-select-option>
+        <ion-select-option value="Vías">Vías y aceras</ion-select-option>
+        <ion-select-option value="Basura">Basura y limpieza</ion-select-option>
+        <ion-select-option value="Agua">Agua y alcantarillado</ion-select-option>
+        <ion-select-option value="Espacios públicos">Espacios públicos</ion-select-option>
+        <ion-select-option value="Otro">Otro</ion-select-option>
       </ion-select>
     </ion-item>
 
-    <!-- Descripción -->
     <ion-item>
-      <ion-textarea label="Descripción" labelPlacement="stacked" [(ngModel)]="descripcion" name="descripcion"
-        placeholder="Describa el problema..." required></ion-textarea>
+      <ion-input
+        label="Ubicación"
+        labelPlacement="stacked"
+        placeholder="Calle, sector o referencia"
+        [(ngModel)]="ubicacion">
+      </ion-input>
     </ion-item>
 
-    <!-- Dirección -->
-    <ion-item>
-      <ion-input label="Dirección" labelPlacement="stacked" [(ngModel)]="direccion" name="direccion"
-        placeholder="Ej. Av. Amazonas y Corella" required></ion-input>
-    </ion-item>
-
-    <!-- Sector -->
-    <ion-item>
-      <ion-input label="Sector" labelPlacement="stacked" [(ngModel)]="sector" name="sector"
-        placeholder="Ej. Norte / La Y" required></ion-input>
-    </ion-item>
-
-    <!-- Prioridad (Baja, Media, Alta) -->
-    <ion-item>
-      <ion-select label="Prioridad" labelPlacement="stacked" [(ngModel)]="prioridad" name="prioridad" required>
-        <ion-select-option value="baja">Baja</ion-select-option>
-        <ion-select-option value="media">Media</ion-select-option>
-        <ion-select-option value="alta">Alta (Exige foto)</ion-select-option>
-      </ion-select>
-    </ion-item>
-
-    <ion-item>
-      <ion-input label="URL de Fotografía (Temporal o Cámara)" labelPlacement="stacked" [(ngModel)]="fotografia"
-        name="fotografia" placeholder="https://..."></ion-input>
-    </ion-item>
-
-    <ion-button expand="block" type="submit" class="ion-margin-top">
-      Guardar Incidencia
+    <ion-button expand="block" fill="outline" type="button" (click)="usarMiUbicacion()">
+      <ion-icon name="locate-outline" slot="start"></ion-icon>
+      Usar mi ubicación actual
     </ion-button>
 
-    <ion-item lines="none">
-      <ion-label>
-        <h3>Condiciones Meteorológicas del Sector</h3>
-        <p>Consulta el clima basada en las coordenadas actuales.</p>
-      </ion-label>
-      <ion-button size="small" (click)="consultarClima()">Consultar Clima</ion-button>
-    </ion-item>
+    <div class="fotografia">
+      <h3>Fotografía de la incidencia</h3>
 
-    <ion-item *ngIf="climaActual">
-      <ion-label>
-        <p><strong>Temperatura:</strong> {{ climaActual.temperatura }} °C</p>
-        <p><strong>Condición:</strong> {{ climaActual.descripcion }}</p>
-        <p><strong>Precipitación (última hora):</strong> {{ climaActual.precipitacion }} mm</p>
-      </ion-label>
-    </ion-item>
+      <input
+        type="file"
+        accept="image/*"
+        capture="environment"
+        (change)="onArchivoSeleccionado($event)">
 
-    <ion-item *ngIf="advertenciaLluvia" lines="none">
-      <ion-note color="danger" class="ion-text-wrap">
-        {{ advertenciaLluvia }}
-      </ion-note>
-    </ion-item>
+      <img
+        *ngIf="vistaPrevia"
+        [src]="vistaPrevia"
+        alt="Vista previa de la fotografía"
+        class="vista-previa">
+    </div>
 
+    <ion-button
+      expand="block"
+      class="boton-registrar"
+      [disabled]="guardando"
+      (click)="registrarIncidencia()">
+      <ion-spinner
+        *ngIf="guardando"
+        name="crescent">
+      </ion-spinner>
 
-    <!-- GPS -->
-    <ion-item lines="none">
-      <ion-label class="ion-text-wrap">
-        <h3>Ubicación del reporte</h3>
-        <p><strong>Latitud:</strong> {{ latitud }}</p>
-        <p><strong>Longitud:</strong> {{ longitud }}</p>
-      </ion-label>
-
-      <ion-button class="boton-gps" expand="block" type="button" (click)="obtenerUbicacionGPS()">
-
-        <ion-icon name="navigate-outline" slot="start"></ion-icon>
-        Obtener GPS
-
-      </ion-button>
-    </ion-item>
-
-
-    <ion-item lines="none">
-      <ion-label>Evidencia Fotográfica (Obligatoria si es Alta)</ion-label>
-      <ion-button size="small" (click)="tomarFoto()">Abrir Cámara</ion-button>
-    </ion-item>
-
-    <ion-item *ngIf="fotografia" lines="none">
-      <ion-img [src]="fotografia" style="max-height: 150px; border-radius: 8px;"></ion-img>
-    </ion-item>
-
-  </form>
+      <span *ngIf="!guardando">Registrar incidencia</span>
+      <span *ngIf="guardando">Guardando...</span>
+    </ion-button>
+  </div>
 </ion-content>

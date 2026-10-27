@@ -64,3 +64,36 @@
     }
   }
 }
+.inicio {
+  max-width: 680px;
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 20px 18px 32px;
+}
+
+.bienvenida {
+  padding: 26px 22px;
+  color: #fff;
+  background: linear-gradient(145deg, #2457c5, #163b8d);
+  border-radius: 24px;
+  box-shadow: 0 14px 28px rgba(36, 87, 197, .2);
+
+  .etiqueta { font-size: .68rem; letter-spacing: 1.3px; font-weight: 700; color: #c6d7ff; }
+  h1 { margin: 14px 0 8px; font-size: 1.8rem; line-height: 1.15; font-weight: 800; }
+  p { margin: 0 0 20px; max-width: 340px; color: #e0eaff; line-height: 1.5; font-size: .94rem; }
+  ion-button { --color: #173f94; font-weight: 700; }
+}
+
+.atajos {
+  margin-top: 28px;
+  h2 { margin: 0 0 14px; font-size: 1.15rem; font-weight: 750; color: #172033; }
+  ion-card { margin: 10px 0; border-radius: 17px; }
+  ion-card-content { display: flex; align-items: center; gap: 14px; padding: 16px; }
+  .icono { width: 44px; height: 44px; display: grid; place-items: center; flex: 0 0 44px; border-radius: 14px; background: #edf3ff; color: #2457c5; font-size: 23px; }
+  strong, small { display: block; }
+  strong { color: #172033; font-size: .94rem; }
+  small { margin-top: 4px; color: #718096; line-height: 1.35; font-size: .78rem; }
+  .flecha { margin-left: auto; color: #94a3b8; }
+}
+
+.pie-inicio { margin: 26px 0 0; color: #8190a5; text-align: center; font-size: .78rem; }

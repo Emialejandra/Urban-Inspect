@@ -1,22 +1,23 @@
 <ion-tabs>
+  <ion-router-outlet></ion-router-outlet>
 
   <ion-tab-bar slot="bottom" class="custom-tab-bar">
-    <ion-tab-button tab="inicio">
+    <ion-tab-button tab="inicio" href="/tabs/inicio">
       <ion-icon name="home-outline"></ion-icon>
       <ion-label>Inicio</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="incidencias">
+    <ion-tab-button tab="incidencias" href="/incidencias">
       <ion-icon name="list-outline"></ion-icon>
       <ion-label>Servidor</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="registro-incidencia">
-      <ion-icon name="add-circle" class="icon-central"></ion-icon>
+    <ion-tab-button tab="registro-incidencia" href="/registro-incidencia">
+      <ion-icon name="add-circle-outline" class="icon-central"></ion-icon>
       <ion-label>Nuevo</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="seguimiento">
+    <ion-tab-button tab="seguimiento" href="/tabs/seguimiento">
       <ion-icon name="bookmark-outline"></ion-icon>
       <ion-label>Offline</ion-label>
     </ion-tab-button>

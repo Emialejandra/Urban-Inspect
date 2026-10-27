@@ -1,11 +1,12 @@
-import { Component, inject, OnInit } from '@angular/core';
+
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { 
-  IonHeader, IonToolbar, IonTitle, IonContent, IonCard, 
-  IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, 
-  IonButton, IonIcon, IonBadge, IonButtons, IonBackButton 
-} from '@ionic/angular';
-import { IncidenciaService } from '../../services/incidencias.service';
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonChip, IonContent, IonHeader, IonIcon, IonRefresher, IonRefresherContent, IonSpinner, IonTitle, IonToolbar } from '@ionic/angular';
+import {
+  Incidencia,
+  IncidenciaService
+} from '../../services/incidencias.service';
 
 @Component({
   selector: 'app-seguimiento',
@@ -13,24 +14,61 @@ import { IncidenciaService } from '../../services/incidencias.service';
   styleUrls: ['./seguimiento.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, IonHeader, IonToolbar, IonTitle, IonContent, 
-    IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, 
-    IonCardContent, IonButton, IonIcon, IonBadge, IonButtons, IonBackButton
+    CommonModule,
+    IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle,
+    IonCardTitle, IonChip, IonContent, IonHeader, IonIcon,
+    IonRefresher, IonRefresherContent, IonSpinner, IonTitle, IonToolbar
   ]
 })
 export class SeguimientoPage implements OnInit {
-  private incidenciaService = inject(IncidenciaService);
-  incidenciasLocales: any[] = [];
+  incidencias: Incidencia[] = [];
+  cargando = false;
 
-  ngOnInit() {
-    this.cargarDatosLocales();
+  constructor(
+    private service: IncidenciaService,
+    private router: Router
+  ) { }
+
+  ngOnInit(): void {
+    this.cargarIncidencias();
   }
 
-  async cargarDatosLocales() {
-    this.incidenciasLocales = await this.incidenciaService.obtenerSeguimientoLocal();
+  async ionViewWillEnter(): Promise<void> {
+    await this.cargarIncidencias();
   }
 
-  async quitarSeguimiento(codigo: string) {
-    this.incidenciasLocales = await this.incidenciaService.eliminarSeguimientoLocal(codigo);
+  async cargarIncidencias(): Promise<void> {
+    this.cargando = true;
+
+    try {
+      this.incidencias = await this.service.obtenerSeguimientoLocal();
+    } finally {
+      this.cargando = false;
+    }
+  }
+
+  async actualizar(event: CustomEvent): Promise<void> {
+    await this.cargarIncidencias();
+    (event.target as HTMLIonRefresherElement).complete();
+  }
+
+  verDetalle(incidencia: Incidencia): void {
+    if (!incidencia.id) {
+      return;
+    }
+
+    this.router.navigate(['/detalle-incidencia', incidencia.id]);
+  }
+
+  estadoColor(estado: string): string {
+    switch (estado?.toLowerCase()) {
+      case 'resuelta':
+      case 'resuelto':
+        return 'success';
+      case 'en proceso':
+        return 'warning';
+      default:
+        return 'medium';
+    }
   }
 }

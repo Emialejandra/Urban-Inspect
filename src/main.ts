@@ -1,6 +1,17 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { addIcons } from 'ionicons';
-import { addCircleOutline } from 'ionicons/icons';
+import {
+  addCircleOutline,
+  alertCircleOutline,
+  arrowForwardOutline,
+  bookmarkOutline,
+  chevronForwardOutline,
+  documentTextOutline,
+  homeOutline,
+  listOutline,
+  locateOutline,
+  locationOutline
+} from 'ionicons/icons';
 import {
   RouteReuseStrategy,
   provideRouter,
@@ -15,7 +26,16 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 
 addIcons({
-  'add-circle-outline': addCircleOutline
+  'add-circle-outline': addCircleOutline,
+  'alert-circle-outline': alertCircleOutline,
+  'arrow-forward-outline': arrowForwardOutline,
+  'bookmark-outline': bookmarkOutline,
+  'chevron-forward-outline': chevronForwardOutline,
+  'document-text-outline': documentTextOutline,
+  'home-outline': homeOutline,
+  'list-outline': listOutline,
+  'locate-outline': locateOutline,
+  'location-outline': locationOutline
 });
 
 bootstrapApplication(AppComponent, {

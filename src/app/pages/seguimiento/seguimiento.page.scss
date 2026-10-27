@@ -66,3 +66,20 @@
     margin: 0 auto;
   }
 }
+.encabezado {
+  padding: 20px 18px;
+  margin: -16px -16px 18px;
+  color: #fff;
+  background: linear-gradient(145deg, #1e3a68, #142747);
+  border-radius: 0 0 22px 22px;
+
+  h2 { margin: 0 0 5px; font-size: 1.35rem; font-weight: 750; }
+  p { margin: 0; color: #c8d5e9; font-size: .88rem; line-height: 1.45; }
+}
+
+.centrado, .vacio { padding: 30px 18px; text-align: center; color: #718096; }
+.vacio ion-icon { font-size: 48px; color: #a8b7cb; }
+.vacio h3 { color: #334155; }
+ion-card { overflow: hidden; }
+ion-card > img { width: 100%; height: 175px; object-fit: cover; }
+ion-card-title { font-size: 1rem; }
