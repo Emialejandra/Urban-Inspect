@@ -3,10 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonChip, IonContent, IonHeader, IonIcon, IonRefresher, IonRefresherContent, IonSpinner, IonTitle, IonToolbar } from '@ionic/angular';
-import {
-  Incidencia,
-  IncidenciaService
-} from '../../services/incidencias.service';
+import { Incidencia } from '../../models/incidencia.model';
+import { IncidenciaService } from '../../services/incidencias.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-seguimiento',
@@ -37,15 +36,26 @@ export class SeguimientoPage implements OnInit {
     await this.cargarIncidencias();
   }
 
-  async cargarIncidencias(): Promise<void> {
-    this.cargando = true;
+async cargarIncidencias(): Promise<void> {
+  this.cargando = true;
 
-    try {
-      this.incidencias = await this.service.obtenerSeguimientoLocal();
-    } finally {
-      this.cargando = false;
+  try {
+    this.incidencias = await firstValueFrom(
+      this.service.obtenerIncidencias()
+    );
+
+    // Actualizar el seguimiento local con los datos del servidor.
+    for (const incidencia of this.incidencias) {
+      await this.service.guardarSeguimientoLocal(incidencia);
     }
+  } catch (error) {
+    console.error('Error al cargar incidencias:', error);
+
+    this.incidencias = await this.service.obtenerSeguimientoLocal();
+  } finally {
+    this.cargando = false;
   }
+}
 
   async actualizar(event: CustomEvent): Promise<void> {
     await this.cargarIncidencias();

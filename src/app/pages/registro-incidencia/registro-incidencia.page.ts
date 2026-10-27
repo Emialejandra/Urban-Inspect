@@ -1,16 +1,32 @@
 
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController} from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
+import {
+  IonButton,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonInput,
+  IonItem,
+  IonSelect,
+  IonSelectOption,
+  IonSpinner,
+  IonTextarea,
+  IonTitle,
+  IonToolbar
+} from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonSelect, IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar } from '@ionic/angular';
+
 import {
   Incidencia,
-  IncidenciaService
-} from '../../services/incidencias.service';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+  PrioridadIncidencia
+} from '../../models/incidencia.model';
+import { IncidenciaService } from '../../services/incidencias.service';
 import { Ubicacion } from '../../services/ubicacion';
+
 @Component({
   selector: 'app-registro-incidencia',
   templateUrl: './registro-incidencia.page.html',
@@ -19,8 +35,18 @@ import { Ubicacion } from '../../services/ubicacion';
   imports: [
     CommonModule,
     FormsModule,
-    IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonSelect,
-    IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar
+    IonButton,
+    IonContent,
+    IonHeader,
+    IonIcon,
+    IonInput,
+    IonItem,
+    IonSelect,
+    IonSelectOption,
+    IonSpinner,
+    IonTextarea,
+    IonTitle,
+    IonToolbar
   ]
 })
 export class RegistroIncidenciaPage {
@@ -28,10 +54,15 @@ export class RegistroIncidenciaPage {
   descripcion = '';
   categoria = '';
   ubicacion = '';
+  prioridad: PrioridadIncidencia = 'media';
 
   archivo: File | null = null;
   vistaPrevia: string | null = null;
-  coordenadas: { latitud: number; longitud: number } | null = null;
+
+  coordenadas: {
+    latitud: number;
+    longitud: number;
+  } | null = null;
 
   guardando = false;
 
@@ -51,18 +82,25 @@ export class RegistroIncidenciaPage {
     }
 
     if (!archivo.type.startsWith('image/')) {
-      this.mostrarAlerta('Archivo inválido', 'Selecciona una fotografía.');
+      void this.mostrarAlerta(
+        'Archivo inválido',
+        'Selecciona una fotografía válida.'
+      );
       input.value = '';
       return;
     }
 
     if (archivo.size > 10 * 1024 * 1024) {
-      this.mostrarAlerta(
+      void this.mostrarAlerta(
         'Imagen demasiado grande',
         'Selecciona una fotografía de máximo 10 MB.'
       );
       input.value = '';
       return;
+    }
+
+    if (this.vistaPrevia) {
+      URL.revokeObjectURL(this.vistaPrevia);
     }
 
     this.archivo = archivo;
@@ -71,9 +109,13 @@ export class RegistroIncidenciaPage {
 
   async usarMiUbicacion(): Promise<void> {
     try {
-      this.coordenadas = await this.ubicacionService.obtenerCoordenadas();
+      this.coordenadas =
+        await this.ubicacionService.obtenerCoordenadas();
+
       if (!this.ubicacion.trim()) {
-        this.ubicacion = `${this.coordenadas.latitud.toFixed(5)}, ${this.coordenadas.longitud.toFixed(5)}`;
+        this.ubicacion =
+          `${this.coordenadas.latitud.toFixed(5)}, ` +
+          `${this.coordenadas.longitud.toFixed(5)}`;
       }
     } catch {
       await this.mostrarAlerta(
@@ -92,7 +134,7 @@ export class RegistroIncidenciaPage {
     ) {
       await this.mostrarAlerta(
         'Campos obligatorios',
-        'Completa todos los campos del formulario.'
+        'Completa el título, la descripción, la categoría y la ubicación.'
       );
       return;
     }
@@ -109,51 +151,52 @@ export class RegistroIncidenciaPage {
 
     try {
       // 1. Subir la fotografía a Cloudinary.
-      const urlFotografia =
-        await this.incidenciaService.subirFotografia(this.archivo);
+      const archivoSeleccionado = this.archivo;
 
-      // 2. Preparar los datos de la incidencia.
+      const urlFotografia =
+        await this.incidenciaService.subirFotografia(archivoSeleccionado);
+
+      // 2. Preparar los datos usando el modelo oficial.
       const incidencia: Incidencia = {
-        codigo: 'INC-' + Date.now().toString().slice(-8),
+        codigo: `INC-${Date.now().toString().slice(-8)}`,
         tipo: this.categoria,
-        titulo: this.titulo.trim(),
         descripcion: this.descripcion.trim(),
-        categoria: this.categoria,
         direccion: this.ubicacion.trim(),
-        ubicacion: this.ubicacion.trim(),
         sector: this.ubicacion.trim(),
-        fotografia: urlFotografia,
-        estado: 'Pendiente',
         fecha: new Date().toISOString(),
-        prioridad: 'media',
+        estado: 'pendiente',
+        prioridad: this.prioridad,
+        fotografia: urlFotografia,
         latitud: this.coordenadas?.latitud ?? null,
-        longitud: this.coordenadas?.longitud ?? null
+        longitud: this.coordenadas?.longitud ?? null,
+        observacion: this.titulo.trim()
       };
 
-      // 3. Guardar los datos en MockAPI.
+      // 3. Guardar la incidencia en MockAPI.
       const guardada = await firstValueFrom(
         this.incidenciaService.crearIncidencia(incidencia)
       );
 
-      // 4. Añadirla al seguimiento local.
+      // 4. Guardarla también en el seguimiento local.
       await this.incidenciaService.guardarSeguimientoLocal(guardada);
 
       await this.mostrarAlerta(
         'Incidencia registrada',
-        'La fotografía se subió y la incidencia se guardó correctamente.'
+        'La fotografía se subió a Cloudinary y la incidencia se guardó correctamente.'
       );
 
       this.limpiarFormulario();
 
-      // Navegar al seguimiento.
-      await this.router.navigate(['/seguimiento']);
-
+      // 5. Abrir la pantalla de seguimiento.
+      await this.router.navigate(['/tabs/seguimiento']);
     } catch (error: any) {
+      console.error('Error al registrar la incidencia:', error);
+
       const mensaje =
         error?.error?.error?.message ||
         error?.error?.message ||
         error?.message ||
-        'No se pudo registrar la incidencia.';
+        'No se pudo registrar la incidencia. Comprueba tu conexión y la configuración de los servicios.';
 
       await this.mostrarAlerta('Error al registrar', mensaje);
     } finally {
@@ -162,10 +205,15 @@ export class RegistroIncidenciaPage {
   }
 
   private limpiarFormulario(): void {
+    if (this.vistaPrevia) {
+      URL.revokeObjectURL(this.vistaPrevia);
+    }
+
     this.titulo = '';
     this.descripcion = '';
     this.categoria = '';
     this.ubicacion = '';
+    this.prioridad = 'media';
     this.archivo = null;
     this.vistaPrevia = null;
     this.coordenadas = null;
