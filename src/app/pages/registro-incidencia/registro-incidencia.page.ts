@@ -2,25 +2,28 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { 
-  IonHeader, IonToolbar, IonTitle, IonContent, IonItem, 
-  IonLabel, IonButton, IonSelect, IonSelectOption, 
-  IonTextarea, IonInput, IonImg, IonNote 
+import { addIcons } from 'ionicons';
+import { navigateOutline } from 'ionicons/icons';
+import {
+  IonHeader, IonToolbar, IonTitle, IonContent, IonItem,
+  IonLabel, IonButton, IonSelect, IonSelectOption,
+  IonTextarea, IonInput, IonImg, IonNote, IonIcon
 } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Geolocation } from '@capacitor/geolocation';
 import { IncidenciaService } from '../../services/incidencias.service';
 import { ClimaService } from '../../services/clima.service';
-import { IonIcon } from '@ionic/angular';
-
+addIcons({
+  'navigate-outline': navigateOutline
+});
 @Component({
   selector: 'app-registro-incidencia',
   templateUrl: './registro-incidencia.page.html',
   styleUrls: ['./registro-incidencia.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, IonHeader, IonToolbar, IonTitle, 
-    IonContent, IonItem, IonLabel, IonButton, 
+    CommonModule, FormsModule, IonHeader, IonToolbar, IonTitle,
+    IonContent, IonItem, IonLabel, IonButton,
     IonSelect, IonSelectOption, IonTextarea, IonInput, IonImg, IonNote, IonIcon
   ]
 })
@@ -36,7 +39,7 @@ export class RegistroIncidenciaPage implements OnInit {
   sector: string = '';
   prioridad: string = 'media';
   fotografia: string = '';
-  
+
   // Datos de GPS y Clima
   latitud: number | null = null;
   longitud: number | null = null;
@@ -81,38 +84,45 @@ export class RegistroIncidenciaPage implements OnInit {
     }
   }
 
-  // R4: Consultar Clima con tolerancia a fallos
+  // Consultar Clima
+
   consultarClima() {
-    if (this.latitud && this.longitud) {
-      // Nota: Asegúrate de usar el método exacto que tengas en tu clima.service.ts 
-      // (si se llama obtenerClima o getClima). Aquí usamos climaService de forma genérica o el método común.
-      const climaObservable = (this.climaService as any).obtenerClima 
-        ? (this.climaService as any).obtenerClima(this.latitud, this.longitud) 
-        : (this.climaService as any).getClimaActual(this.latitud, this.longitud);
-
-      climaObservable.subscribe({
-        next: (data: any) => {
-          this.climaActual = {
-            temperatura: Math.round(data.main.temp - 273.15),
-            descripcion: data.weather[0].description,
-            precipitacion: data.rain ? (data.rain['1h'] || 0) : 0
-          };
-
-          if (this.climaActual.precipitacion > 2) {
-            this.advertenciaLluvia = '⚠️ Alerta meteorológica: Se registran precipitaciones fuertes en la zona.';
-          } else {
-            this.advertenciaLluvia = '';
-          }
-        },
-        error: (err: any) => {
-          console.warn('Advertencia: No se pudo conectar al servicio de clima (Tolerancia a fallos activada).', err);
-          this.climaActual = null;
-        }
-      });
+    if (this.latitud === null || this.longitud === null) {
+      return;
     }
+
+    this.climaService.obtenerClima(this.latitud, this.longitud).subscribe({
+      next: (data: any) => {
+        // El servicio ya transforma la respuesta de OpenWeather.
+        if (!data) {
+          this.climaActual = null;
+          this.advertenciaLluvia = '';
+          return;
+        }
+
+        this.climaActual = {
+          temperatura: data.temperatura,
+          descripcion: data.descripcion,
+          precipitacion: data.precipitacion ?? 0
+        };
+
+        if (this.climaActual.precipitacion > 2) {
+          this.advertenciaLluvia =
+            '⚠️ Alerta meteorológica: Se registran precipitaciones fuertes en la zona.';
+        } else {
+          this.advertenciaLluvia = '';
+        }
+      },
+      error: (err: any) => {
+        console.warn('No se pudo consultar el clima:', err);
+        this.climaActual = null;
+        this.advertenciaLluvia = '';
+      }
+    });
   }
 
-  // R5: Guardar Incidencia y enviarla a la MockAPI
+
+  // Guardar Incidencia y enviarla a la MockAPI
   guardarIncidencia() {
     if (!this.tipo || !this.descripcion || !this.sector) {
       alert('Por favor complete los campos obligatorios (Tipo, Descripción y Sector).');
