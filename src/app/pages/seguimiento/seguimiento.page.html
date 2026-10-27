@@ -1,13 +1,51 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>seguimiento</ion-title>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="light">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/incidencias" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Seguimiento Local</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">seguimiento</ion-title>
-    </ion-toolbar>
-  </ion-header>
+
+  <!-- Header con resumen visual estilo App Store -->
+  <div class="header-banner ion-padding">
+    <h2>📌 Mis Incidencias Guardadas</h2>
+    <p>Registros almacenados localmente en tu dispositivo para consulta offline.</p>
+  </div>
+
+  <!-- Estado de Carga / Sin datos -->
+  <div *ngIf="incidenciasLocales.length === 0" class="empty-state ion-text-center ion-padding">
+    <ion-icon name="bookmark-outline" class="empty-icon"></ion-icon>
+    <h3>No tienes registros guardados</h3>
+    <p>Guarda incidencias desde el listado general para hacerles seguimiento local sin internet.</p>
+  </div>
+
+  <!-- Tarjetas elegantes para cada incidencia guardada -->
+  <ion-card *ngFor="let local of incidenciasLocales">
+    <ion-card-header>
+      <div class="card-top-bar">
+        <ion-badge color="primary">{{ local.codigo }}</ion-badge>
+        <span class="fecha-badge">{{ local.fecha }}</span>
+      </div>
+      <ion-card-title>{{ local.tipo }}</ion-card-title>
+      <ion-card-subtitle>{{ local.sector }}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <p class="descripcion-texto">{{ local.descripcion }}</p>
+      
+      <!-- Imagen con aspecto pulido -->
+      <img *ngIf="local.fotografia" [src]="local.fotografia" class="foto-evidencia" alt="Evidencia fotográfica" />
+
+      <div class="card-footer-actions ion-margin-top">
+        <ion-button fill="clear" color="danger" size="small" (click)="quitarSeguimiento(local.codigo)">
+          <ion-icon name="trash-outline" slot="start"></ion-icon>
+          Quitar de lista
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
 </ion-content>

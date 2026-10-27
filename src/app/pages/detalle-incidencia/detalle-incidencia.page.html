@@ -1,13 +1,83 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>detalle-incidencia</ion-title>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="light">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/incidencias" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle de Incidencia</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">detalle-incidencia</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" class="ion-padding">
+
+  <div *ngIf="!incidencia" class="ion-text-center ion-padding">
+    <p>Cargando información del registro...</p>
+  </div>
+
+  <div *ngIf="incidencia" class="detalle-container">
+    
+    <!-- Tarjeta Principal con Datos Completos (R8) -->
+    <ion-card>
+      <ion-card-header>
+        <div class="card-top-bar">
+          <ion-badge color="primary">{{ incidencia.codigo }}</ion-badge>
+          <ion-badge [color]="incidencia.prioridad === 'alta' ? 'danger' : 'warning'">
+            {{ incidencia.prioridad }}
+          </ion-badge>
+        </div>
+        <ion-card-title class="ion-margin-top">{{ incidencia.tipo }}</ion-card-title>
+        <ion-card-subtitle>{{ incidencia.sector }} — {{ incidencia.direccion }}</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <p class="descripcion-principal"><strong>Descripción:</strong> {{ incidencia.descripcion }}</p>
+        
+        <div class="meta-info">
+          <p><strong>Fecha:</strong> {{ incidencia.fecha }}</p>
+          <p><strong>GPS:</strong> Lat: {{ incidencia.latitud }} | Lon: {{ incidencia.longitud }}</p>
+        </div>
+
+        <!-- Fotografía en tamaño completo -->
+        <div *ngIf="incidencia.fotografia" class="imagen-contenedor">
+          <p><strong>Evidencia Fotográfica:</strong></p>
+          <img [src]="incidencia.fotografia" alt="Evidencia" class="foto-detalle" />
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Tarjeta de Gestión de Estado y Observación (R9) -->
+    <ion-card class="card-actualizacion">
+      <ion-card-header>
+        <ion-card-title>Actualizar Estado (R9)</ion-card-title>
+        <ion-card-subtitle>Modifique el estado y añada notas obligatorias si resuelve</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        
+        <ion-item lines="solid" class="ion-margin-bottom">
+          <ion-label position="stacked">Estado</ion-label>
+          <ion-select [(ngModel)]="nuevoEstado" interface="popover">
+            <ion-select-option value="pendiente">Pendiente</ion-select-option>
+            <ion-select-option value="en_proceso">En Proceso</ion-select-option>
+            <ion-select-option value="resuelta">Resuelta</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item lines="solid" class="ion-margin-bottom">
+          <ion-label position="stacked">Observación / Nota técnica *</ion-label>
+          <ion-textarea 
+            [(ngModel)]="observacion" 
+            rows="4" 
+            placeholder="Escriba aquí los detalles de la resolución...">
+          </ion-textarea>
+        </ion-item>
+
+        <ion-button expand="block" color="primary" (click)="guardarCambios()" class="ion-margin-top">
+          Guardar Cambios
+        </ion-button>
+
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+
 </ion-content>

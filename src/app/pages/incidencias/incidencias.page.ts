@@ -1,29 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { addIcons } from 'ionicons';
-import { Incidencia } from '../../models/incidencia.model';
-import { IncidenciaService } from '../../services/incidencias.service';
-
-import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonButton,
-  IonIcon,
-  IonList,
-  IonListHeader,
-  IonItem,
-  IonLabel,
-  IonBadge,
-  IonSpinner
+import { RouterLink } from '@angular/router';
+import { 
+  IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonListHeader,
+  IonItem, IonLabel, IonButton, IonIcon, IonBadge, IonSpinner 
 } from '@ionic/angular';
-
-import {
-  addCircleOutline,
-  alertCircleOutline
-} from 'ionicons/icons';
+import { IncidenciaService } from '../../services/incidencias.service';
 
 @Component({
   selector: 'app-incidencias',
@@ -31,116 +13,57 @@ import {
   styleUrls: ['./incidencias.page.scss'],
   standalone: true,
   imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonButton,
-    IonIcon,
-    IonList,
-    IonListHeader,
-    IonItem,
-    IonLabel,
-    IonBadge,
-    CommonModule,
-    IonSpinner
+    CommonModule, RouterLink, IonHeader, IonToolbar, IonTitle, 
+    IonContent, IonList, IonListHeader, IonItem, IonLabel, 
+    IonButton, IonIcon, IonBadge, IonSpinner
   ]
 })
-
 export class IncidenciasPage implements OnInit {
+  private incidenciaService = inject(IncidenciaService);
 
-  incidencias: Incidencia[] = [];
-  paginaActual = 1;
-  readonly limite = 5;
+  // Lista de incidencias
+  incidencias: any[] = [];
+  incidenciasLocales: any[] = [];
 
-  cargando = false;
-  hayMasIncidencias = true;
-  mensajeError = '';
+  // Variables de control de estado de carga y error
+  cargando: boolean = false;
+  mensajeError: string = '';
+  hayMasIncidencias: boolean = false;
 
-  constructor(
-    private incidenciaService: IncidenciaService
-  ) {
-    addIcons({
-      'add-circle-outline': addCircleOutline,
-      'alert-circle-outline': alertCircleOutline
-    });
-  }
-
-  ngOnInit(): void {
+  ngOnInit() {
     this.cargarIncidencias();
+    this.cargarSeguimientoLocal();
   }
 
-
-  cargarIncidencias(): void {
-    if (this.cargando) return;
-
+  cargarIncidencias() {
     this.cargando = true;
     this.mensajeError = '';
 
-    this.incidenciaService.obtenerIncidencias(this.paginaActual, this.limite)
-      .subscribe({
-        next: (datos) => {
-          console.log('Incidencias recibidas:', datos);
-
-          if (!Array.isArray(datos)) {
-            this.mensajeError = 'La respuesta de MockAPI no es una lista válida.';
-            this.cargando = false;
-            return;
-          }
-
-          // Evitar duplicados al cargar más páginas
-          const existentes = new Set(
-            this.incidencias.map((item) => item.id)
-          );
-
-          const nuevas = datos.filter(
-            (item) => !item.id || !existentes.has(item.id)
-          );
-
-          this.incidencias = [...this.incidencias, ...nuevas];
-
-          this.hayMasIncidencias = datos.length === this.limite;
-          this.paginaActual++;
-
-          this.cargando = false;
-        },
-        error: (error) => {
-          console.error('Error de MockAPI:', error);
-          this.mensajeError =
-            'No se pudieron cargar las incidencias. Pulsa Reintentar.';
-          this.cargando = false;
-        }
-      });
+    this.incidenciaService.obtenerIncidencias().subscribe({
+      next: (data) => {
+        this.incidencias = data;
+        this.cargando = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar incidencias:', err);
+        this.mensajeError = 'No se pudieron cargar las incidencias del servidor.';
+        this.cargando = false;
+      }
+    });
   }
 
-
-
-  reintentar(): void {
+  reintentar() {
     this.cargarIncidencias();
   }
 
-  actualizarLista(event: any): void {
-    this.incidencias = [];
-    this.paginaActual = 1;
-    this.hayMasIncidencias = true;
-    this.mensajeError = '';
+  // R1: Guardar localmente para seguimiento offline
+  async agregarSeguimiento(incidencia: any) {
+    await this.incidenciaService.guardarSeguimientoLocal(incidencia);
+    await this.cargarSeguimientoLocal();
+    alert('Incidencia guardada para seguimiento local.');
+  }
 
-    this.incidenciaService
-      .obtenerIncidencias(1, this.limite)
-      .subscribe({
-        next: (datos) => {
-          this.incidencias = datos;
-          this.hayMasIncidencias = datos.length === this.limite;
-          this.paginaActual = 2;
-          this.cargando = false;
-          event.target.complete();
-        },
-        error: (error) => {
-          console.error('Error al actualizar incidencias:', error);
-          this.mensajeError = 'No se pudo actualizar la lista.';
-          this.cargando = false;
-          event.target.complete();
-        }
-      });
+  async cargarSeguimientoLocal() {
+    this.incidenciasLocales = await this.incidenciaService.obtenerSeguimientoLocal();
   }
 }

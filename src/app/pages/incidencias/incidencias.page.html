@@ -6,41 +6,41 @@
 
 <ion-content [fullscreen]="true">
 
-  <div class="contenedor">
+  <div class="contenedor ion-padding">
 
     <h2>Registro de incidencias</h2>
     <p>Consulta y administra las incidencias registradas.</p>
 
-    <ion-button expand="block" color="primary">
+    <!-- Botón para ir al formulario de registro (R5/R10) -->
+    <ion-button expand="block" color="primary" routerLink="/registro-incidencia">
       <ion-icon name="add-circle-outline" slot="start"></ion-icon>
       Nueva incidencia
     </ion-button>
 
     <!-- Mensaje de error -->
-    <div *ngIf="mensajeError">
-      <p>{{ mensajeError }}</p>
+    <div *ngIf="mensajeError" class="ion-padding ion-text-center">
+      <p color="danger">{{ mensajeError }}</p>
       <ion-button (click)="reintentar()" expand="block">
         Reintentar
       </ion-button>
     </div>
 
     <!-- Indicador de carga -->
-    <div *ngIf="cargando" class="estado-carga">
+    <div *ngIf="cargando" class="estado-carga ion-text-center ion-padding">
       <ion-spinner name="crescent"></ion-spinner>
       <p>Cargando incidencias...</p>
     </div>
 
-    <!-- Lista de incidencias -->
-    <ion-list>
+    <!-- Lista principal de incidencias del Servidor -->
+    <ion-list *ngIf="incidencias && incidencias.length > 0">
       <ion-list-header>
-        <ion-label>Incidencias registradas</ion-label>
+        <ion-label>Incidencias del Servidor</ion-label>
       </ion-list-header>
 
       <ion-item *ngFor="let incidencia of incidencias">
-        <ion-icon name="alert-circle-outline" slot="start" color="warning">
-        </ion-icon>
+        <ion-icon name="alert-circle-outline" slot="start" color="warning"></ion-icon>
 
-        <ion-label>
+        <ion-label class="ion-text-wrap">
           <h2>{{ incidencia.codigo }} - {{ incidencia.tipo }}</h2>
           <p>{{ incidencia.descripcion }}</p>
           <p><strong>Dirección:</strong> {{ incidencia.direccion }}</p>
@@ -56,21 +56,56 @@
             style="width: 100%; max-width: 250px; border-radius: 8px; margin-top: 8px;">
         </ion-label>
 
-        <ion-badge color="warning">{{ incidencia.estado }}</ion-badge>
+        <!-- Botones de acción en la fila (Adentro del bucle) -->
+        <div slot="end" style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
+          <ion-badge color="warning">{{ incidencia.estado }}</ion-badge>
+          
+          <!-- Botón R1: Seguimiento Local -->
+          <ion-button size="small" color="tertiary" (click)="agregarSeguimiento(incidencia)">
+            Seguir
+          </ion-button>
+
+          <!-- Botón R8: Ver Detalle / Gestionar -->
+          <ion-button size="small" fill="outline" color="primary" [routerLink]="['/detalle-incidencia', incidencia.id]">
+            Detalle
+          </ion-button>
+        </div>
       </ion-item>
-      
     </ion-list>
 
-    <!-- Estado vacío -->
-    <div *ngIf="!cargando && !mensajeError && incidencias.length === 0">
-      <p>No hay incidencias registradas.</p>
+    <!-- Estado vacío de la API -->
+    <div *ngIf="!cargando && !mensajeError && incidencias.length === 0" class="ion-text-center ion-padding">
+      <p>No hay incidencias registradas en el servidor.</p>
     </div>
 
-    <!-- Cargar más -->
+    <!-- Cargar más (Paginación R3) -->
     <ion-button *ngIf="hayMasIncidencias && !cargando && !mensajeError" expand="block" fill="outline"
-      (click)="cargarIncidencias()">
+      (click)="cargarIncidencias()" class="ion-margin-top">
       Cargar más incidencias
     </ion-button>
+
+
+    <!-- ========================================== -->
+    <!-- SECCIÓN DE SEGUIMIENTO LOCAL (R1)          -->
+    <!-- ========================================== -->
+    <hr style="margin: 30px 0; border: 0; border-top: 1px solid #ccc;">
+
+    <h2>Mis Incidencias en Seguimiento Local</h2>
+    <p>Registros guardados en el dispositivo (Offline).</p>
+
+    <ion-list *ngIf="incidenciasLocales && incidenciasLocales.length > 0">
+      <ion-item *ngFor="let local of incidenciasLocales">
+        <ion-label class="ion-text-wrap">
+          <h2>📌 {{ local.codigo }} - {{ local.tipo }}</h2>
+          <p>{{ local.descripcion }}</p>
+          <p><strong>Sector:</strong> {{ local.sector }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <div *ngIf="!incidenciasLocales || incidenciasLocales.length === 0" class="ion-text-center ion-padding">
+      <p>No tienes incidencias guardadas para seguimiento local.</p>
+    </div>
 
   </div>
 

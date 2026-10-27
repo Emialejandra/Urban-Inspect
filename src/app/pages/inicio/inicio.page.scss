@@ -1,0 +1,66 @@
+.hero-section {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  padding: 40px 20px;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  text-align: center;
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  p {
+    font-size: 0.95rem;
+    color: #93c5fd;
+    margin: 0;
+  }
+}
+
+.menu-container {
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.menu-card {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  padding: 18px 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+    background: #f8fafc;
+  }
+
+  ion-icon {
+    font-size: 28px;
+    color: #2563eb;
+    margin-right: 16px;
+  }
+
+  .info-text {
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 0 4px 0;
+    }
+    p {
+      font-size: 0.82rem;
+      color: #64748b;
+      margin: 0;
+    }
+  }
+}

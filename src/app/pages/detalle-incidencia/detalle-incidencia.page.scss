@@ -1,0 +1,53 @@
+.detalle-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding-bottom: 30px;
+}
+
+.card-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.descripcion-principal {
+  font-size: 0.98rem;
+  color: #1e293b;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.meta-info {
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 10px;
+  margin: 12px 0;
+  font-size: 0.85rem;
+  color: #475569;
+  
+  p {
+    margin: 4px 0;
+  }
+}
+
+.imagen-contenedor {
+  margin-top: 16px;
+  p {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 6px;
+  }
+}
+
+.foto-detalle {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.card-actualizacion {
+  margin-top: 20px;
+}
