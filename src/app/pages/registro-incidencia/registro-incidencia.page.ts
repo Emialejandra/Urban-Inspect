@@ -125,6 +125,7 @@ export class RegistroIncidenciaPage {
     }
   }
 
+
   async registrarIncidencia(): Promise<void> {
     if (
       !this.titulo.trim() ||
@@ -139,24 +140,26 @@ export class RegistroIncidenciaPage {
       return;
     }
 
-    if (!this.archivo) {
-      await this.mostrarAlerta(
-        'Fotografía requerida',
-        'Selecciona una fotografía de la incidencia.'
-      );
-      return;
-    }
-
     this.guardando = true;
 
     try {
-      // 1. Subir la fotografía a Cloudinary.
-      const archivoSeleccionado = this.archivo;
+      let urlFotografia = '';
 
-      const urlFotografia =
-        await this.incidenciaService.subirFotografia(archivoSeleccionado);
+      // La fotografía es opcional para evitar bloquear el registro.
+      if (this.archivo) {
+        try {
+          urlFotografia =
+            await this.incidenciaService.subirFotografia(this.archivo);
+        } catch (error) {
+          console.error('Error al subir la fotografía:', error);
 
-      // 2. Preparar los datos usando el modelo oficial.
+          await this.mostrarAlerta(
+            'Aviso',
+            'No se pudo subir la fotografía. Se intentará guardar la incidencia sin ella.'
+          );
+        }
+      }
+
       const incidencia: Incidencia = {
         codigo: `INC-${Date.now().toString().slice(-8)}`,
         tipo: this.categoria,
@@ -172,33 +175,36 @@ export class RegistroIncidenciaPage {
         observacion: this.titulo.trim()
       };
 
-      // 3. Guardar la incidencia en MockAPI.
+      // Guardar primero en MockAPI.
       const guardada = await firstValueFrom(
         this.incidenciaService.crearIncidencia(incidencia)
       );
 
-      // 4. Guardarla también en el seguimiento local.
+      // Sin respuesta válida no se debe simular un registro exitoso.
+      if (!guardada) {
+        throw new Error('La API no devolvió la incidencia guardada.');
+      }
+
+      // Actualizar el seguimiento local.
       await this.incidenciaService.guardarSeguimientoLocal(guardada);
 
       await this.mostrarAlerta(
         'Incidencia registrada',
-        'La fotografía se subió a Cloudinary y la incidencia se guardó correctamente.'
+        'La incidencia se guardó correctamente.'
       );
 
       this.limpiarFormulario();
 
-      // 5. Abrir la pantalla de seguimiento.
       await this.router.navigate(['/tabs/seguimiento']);
     } catch (error: any) {
       console.error('Error al registrar la incidencia:', error);
 
-      const mensaje =
-        error?.error?.error?.message ||
+      await this.mostrarAlerta(
+        'Error al registrar',
         error?.error?.message ||
         error?.message ||
-        'No se pudo registrar la incidencia. Comprueba tu conexión y la configuración de los servicios.';
-
-      await this.mostrarAlerta('Error al registrar', mensaje);
+        'No se pudo guardar la incidencia. Comprueba la conexión con MockAPI.'
+      );
     } finally {
       this.guardando = false;
     }

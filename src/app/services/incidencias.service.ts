@@ -1,7 +1,7 @@
 
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom, timeout } from 'rxjs';
 import { Preferences } from '@capacitor/preferences';
 import { Incidencia } from '../models/incidencia.model';
 
@@ -30,17 +30,25 @@ export class IncidenciaService {
         return respuesta.secure_url;
     }
 
+
     obtenerIncidencias(): Observable<Incidencia[]> {
-        return this.http.get<Incidencia[]>(this.apiUrl);
+        return this.http.get<Incidencia[]>(this.apiUrl).pipe(
+            timeout(10000)
+        );
     }
 
     obtenerIncidenciaPorId(id: string): Observable<Incidencia> {
-        return this.http.get<Incidencia>(`${this.apiUrl}/${id}`);
+        return this.http
+            .get<Incidencia>(`${this.apiUrl}/${id}`)
+            .pipe(timeout(10000));
     }
 
     crearIncidencia(incidencia: Incidencia): Observable<Incidencia> {
-        return this.http.post<Incidencia>(this.apiUrl, incidencia);
+        return this.http
+            .post<Incidencia>(this.apiUrl, incidencia)
+            .pipe(timeout(10000));
     }
+
 
     actualizarIncidencia(
         id: string,
