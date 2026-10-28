@@ -2,11 +2,6 @@
 
 Aplicación móvil académica de la práctica **UrbanInspect: Inspección de infraestructura urbana**, de la asignatura Desarrollo de Aplicaciones Móviles de la ESFOT — Escuela Politécnica Nacional. La práctica aborda el registro, consulta y seguimiento de incidencias de infraestructura urbana desde Android.
 
-**Estudiante:** [Completar]  
-**Fecha:** [Completar]  
-**Paralelo:** [Completar]  
-**Repositorio GitHub:** [Agregar enlace]
-
 ## Tecnologías y dependencias
 
 Versiones resueltas en `package-lock.json`:
