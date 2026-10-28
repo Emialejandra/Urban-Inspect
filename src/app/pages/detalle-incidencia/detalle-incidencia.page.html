@@ -4,17 +4,22 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/seguimiento"></ion-back-button>
     </ion-buttons>
-    <ion-title>Detalle</ion-title>
+    <ion-title>Detalle de incidencia</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
+
+  <!-- Cargando información -->
   <div *ngIf="cargando" class="centrado">
     <ion-spinner name="crescent"></ion-spinner>
-    <p>Cargando detalle...</p>
+    <p>Cargando detalle de la incidencia...</p>
+    <p>Espera un momento, por favor.</p>
   </div>
 
-  <ng-container *ngIf="incidencia as item">
+  <!-- Información de la incidencia -->
+  <ng-container *ngIf="!cargando && incidencia as item">
+
     <img
       *ngIf="item.fotografia"
       [src]="item.fotografia"
@@ -24,11 +29,16 @@
     <h1>{{ item.titulo || item.tipo || 'Reporte ciudadano' }}</h1>
 
     <ion-chip color="primary">
-      {{ item.codigo }}
+      {{ item.codigo || 'Sin código' }}
     </ion-chip>
 
-    <ion-chip color="medium">
-      {{ item.estado || 'Pendiente' }}
+    <ion-chip
+      [color]="item.estado === 'resuelta' || item.estado === 'terminada'
+        ? 'success'
+        : item.estado === 'en_proceso'
+        ? 'warning'
+        : 'medium'">
+      {{ item.estado || 'pendiente' }}
     </ion-chip>
 
     <ion-card>
@@ -38,17 +48,63 @@
 
       <ion-card-content>
         <h3>Descripción</h3>
-        <p>{{ item.descripcion }}</p>
+        <p>{{ item.descripcion || 'Sin descripción' }}</p>
 
         <h3>Categoría</h3>
         <p>{{ item.categoria || item.tipo || 'Sin categoría' }}</p>
 
         <h3>Ubicación</h3>
-        <p>{{ item.ubicacion || item.direccion || item.sector || 'Sin ubicación' }}</p>
+        <p>
+          {{ item.ubicacion || item.direccion || item.sector || 'Sin ubicación' }}
+        </p>
 
         <h3>Fecha de registro</h3>
-        <p>{{ item.fecha | date:'dd/MM/yyyy HH:mm' }}</p>
+        <p>
+          {{ item.fecha ? (item.fecha | date:'dd/MM/yyyy HH:mm') : 'Sin fecha' }}
+        </p>
       </ion-card-content>
     </ion-card>
+
+    <!-- Cambiar el estado -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Actualizar estado</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <p>
+          Selecciona el nuevo estado de esta incidencia.
+        </p>
+
+        <ion-select
+          label="Estado"
+          labelPlacement="stacked"
+          interface="popover"
+          [(ngModel)]="estadoSeleccionado"
+          (ionChange)="cambiarEstado($event.detail.value)"
+          [disabled]="cargando || cambiandoEstado">
+
+          <ion-select-option value="pendiente">
+            Pendiente
+          </ion-select-option>
+
+          <ion-select-option value="en_proceso">
+            En proceso
+          </ion-select-option>
+
+          <ion-select-option value="resuelta">
+            Terminada
+          </ion-select-option>
+        </ion-select>
+
+        <div *ngIf="cambiandoEstado" class="estado-cargando">
+          <ion-spinner name="crescent"></ion-spinner>
+          <p>Guardando nuevo estado...</p>
+        </div>
+
+      </ion-card-content>
+    </ion-card>
+
   </ng-container>
+
 </ion-content>

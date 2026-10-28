@@ -1,9 +1,9 @@
 
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlmacenamientoLocal } from '../../services/almacenamiento-local';
 import {
   IonButton,
   IonContent,
@@ -17,7 +17,7 @@ import {
   IonSpinner,
   IonTextarea,
   IonTitle,
-  IonToolbar
+  IonToolbar, AlertController
 } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
 
@@ -52,7 +52,9 @@ import { Ubicacion } from '../../services/ubicacion';
     IonToolbar
   ]
 })
-export class RegistroIncidenciaPage {
+
+export class RegistroIncidenciaPage implements OnInit, OnDestroy {
+
   titulo = '';
   descripcion = '';
   categoria = '';
@@ -68,6 +70,12 @@ export class RegistroIncidenciaPage {
   } | null = null;
 
   guardando = false;
+
+  private readonly claveBorrador = 'urbaninspect_borrador';
+
+  private cargandoBorrador = false;
+  private temporizadorBorrador:
+    ReturnType<typeof setTimeout> | undefined;
 
   // Información meteorológica
   clima: {
@@ -85,8 +93,9 @@ export class RegistroIncidenciaPage {
     private ubicacionService: Ubicacion,
     private alertController: AlertController,
     private router: Router,
-    private climaService: ClimaService
-  ) {}
+    private climaService: ClimaService,
+    private almacenamiento: AlmacenamientoLocal
+  ) { }
 
   onArchivoSeleccionado(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -154,6 +163,7 @@ export class RegistroIncidenciaPage {
     } finally {
       this.obteniendoUbicacion = false;
     }
+    this.guardarBorradorAutomatico();
   }
 
   async consultarClima(): Promise<void> {
@@ -268,6 +278,7 @@ export class RegistroIncidenciaPage {
 
       // Guardar también en el seguimiento local.
       await this.incidenciaService.guardarSeguimientoLocal(guardada);
+      await this.almacenamiento.eliminar(this.claveBorrador);
 
       await this.mostrarAlerta(
         'Incidencia registrada',
@@ -283,8 +294,8 @@ export class RegistroIncidenciaPage {
       await this.mostrarAlerta(
         'Error al registrar',
         error?.error?.message ||
-          error?.message ||
-          'No se pudo guardar la incidencia. Comprueba la conexión con MockAPI.'
+        error?.message ||
+        'No se pudo guardar la incidencia. Comprueba la conexión con MockAPI.'
       );
     } finally {
       this.guardando = false;
@@ -323,4 +334,93 @@ export class RegistroIncidenciaPage {
 
     await alerta.present();
   }
+
+
+  async ngOnInit(): Promise<void> {
+    this.cargandoBorrador = true;
+
+    try {
+      const borrador = await this.almacenamiento.obtener<{
+        titulo: string;
+        descripcion: string;
+        categoria: string;
+        ubicacion: string;
+        prioridad: PrioridadIncidencia;
+        coordenadas: {
+          latitud: number;
+          longitud: number;
+        } | null;
+      } | null>(this.claveBorrador, null);
+
+      if (borrador) {
+        this.titulo = borrador.titulo ?? '';
+        this.descripcion = borrador.descripcion ?? '';
+        this.categoria = borrador.categoria ?? '';
+        this.ubicacion = borrador.ubicacion ?? '';
+        this.prioridad = borrador.prioridad ?? 'media';
+        this.coordenadas = borrador.coordenadas ?? null;
+      }
+    } catch (error) {
+      console.error('Error al recuperar el borrador:', error);
+    } finally {
+      this.cargandoBorrador = false;
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.temporizadorBorrador) {
+      clearTimeout(this.temporizadorBorrador);
+    }
+
+    // Guardar inmediatamente los últimos valores disponibles
+    // si el componente se destruye durante la navegación.
+    if (this.tieneDatosFormulario()) {
+      void this.guardarBorrador();
+    }
+  }
+
+  guardarBorradorAutomatico(): void {
+    if (this.cargandoBorrador || this.guardando) {
+      return;
+    }
+
+    if (this.temporizadorBorrador) {
+      clearTimeout(this.temporizadorBorrador);
+    }
+
+    this.temporizadorBorrador = setTimeout(() => {
+      void this.guardarBorrador();
+    }, 400);
+  }
+
+  private tieneDatosFormulario(): boolean {
+    return !!(
+      this.titulo.trim() ||
+      this.descripcion.trim() ||
+      this.categoria ||
+      this.ubicacion.trim() ||
+      this.coordenadas
+    );
+  }
+
+  private async guardarBorrador(): Promise<void> {
+    if (this.cargandoBorrador || this.guardando) {
+      return;
+    }
+
+    if (!this.tieneDatosFormulario()) {
+      await this.almacenamiento.eliminar(this.claveBorrador);
+      return;
+    }
+
+    await this.almacenamiento.guardar(this.claveBorrador, {
+      titulo: this.titulo,
+      descripcion: this.descripcion,
+      categoria: this.categoria,
+      ubicacion: this.ubicacion,
+      prioridad: this.prioridad,
+      coordenadas: this.coordenadas
+    });
+  }
+
 }

@@ -75,3 +75,181 @@ ion-badge {
   font-size: 0.75rem;
   font-weight: 600;
 }
+
+
+/* ========================================
+   URBAN-INSPECT | TEMA EJECUTIVO
+   ======================================== */
+
+body {
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  background: #f4f3ef;
+  color: #252b25;
+}
+
+ion-content {
+  --background: #f4f3ef;
+  --color: #252b25;
+}
+
+ion-header ion-toolbar {
+  --background: #465445;
+  --color: #ffffff;
+  --border-width: 0;
+  --min-height: 58px;
+}
+
+ion-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+}
+
+ion-card {
+  margin: 12px 0;
+  border: 1px solid #e5e5de;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 5px 18px rgba(37, 43, 37, 0.045);
+}
+
+ion-card-title {
+  color: #30392f;
+  font-size: 1.05rem;
+  font-weight: 750;
+}
+
+ion-card-content {
+  color: #62695f;
+  line-height: 1.6;
+}
+
+ion-button {
+  --border-radius: 11px;
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+ion-button[expand="block"] {
+  min-height: 46px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+ion-item {
+  --background: #ffffff;
+  --color: #252b25;
+  --border-color: #e1e2da;
+  --highlight-color-focused: #465445;
+  --highlight-color-valid: #465445;
+  --border-radius: 10px;
+}
+
+ion-input,
+ion-textarea,
+ion-select {
+  --color: #252b25;
+  --placeholder-color: #898d84;
+  --highlight-color-focused: #465445;
+}
+
+ion-label {
+  color: #41483f;
+}
+
+ion-tab-bar {
+  --background: #ffffff;
+  --color: #7a8076;
+  --color-selected: #465445;
+  border-top: 1px solid #e1e2da;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+ion-tab-button {
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+ion-list {
+  background: transparent;
+}
+
+ion-list-header {
+  color: #30392f;
+  font-weight: 750;
+}
+
+ion-modal {
+  --border-radius: 18px;
+}
+
+ion-alert {
+  --backdrop-opacity: 0.42;
+  --button-color: #465445;
+}
+
+ion-spinner {
+  color: #465445;
+}
+
+ion-searchbar {
+  --background: #ffffff;
+  --color: #252b25;
+  --placeholder-color: #898d84;
+  --icon-color: #74776c;
+  --border-radius: 12px;
+  --box-shadow: 0 2px 10px rgba(37, 43, 37, 0.04);
+}
+
+ion-chip {
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+@media (max-width: 480px) {
+  ion-title {
+    font-size: 0.98rem;
+  }
+
+  ion-card {
+    margin: 10px 0;
+    border-radius: 13px;
+  }
+
+  ion-card-content {
+    font-size: 0.9rem;
+  }
+}
+
+
+/* Estados de las incidencias */
+
+.estado-pendiente {
+  --background: #fff0d5 !important;
+  --color: #87570e !important;
+  background: #fff0d5 !important;
+  color: #87570e !important;
+  border: 1px solid #f0d8a9;
+  font-weight: 700;
+}
+
+.estado-en-proceso {
+  --background: #dcebe5 !important;
+  --color: #28634f !important;
+  background: #dcebe5 !important;
+  color: #28634f !important;
+  border: 1px solid #c1ddd0;
+  font-weight: 700;
+}
+
+.estado-terminada {
+  --background: #e5e7eb !important;
+  --color: #374151 !important;
+  background: #e5e7eb !important;
+  color: #374151 !important;
+  border: 1px solid #d1d5db;
+  font-weight: 700;
+}
+

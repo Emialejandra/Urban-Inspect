@@ -36,26 +36,26 @@ export class SeguimientoPage implements OnInit {
     await this.cargarIncidencias();
   }
 
-async cargarIncidencias(): Promise<void> {
-  this.cargando = true;
+  async cargarIncidencias(): Promise<void> {
+    this.cargando = true;
 
-  try {
-    this.incidencias = await firstValueFrom(
-      this.service.obtenerIncidencias()
-    );
+    try {
+      this.incidencias = await firstValueFrom(
+        this.service.obtenerIncidencias()
+      );
 
-    // Actualizar el seguimiento local con los datos del servidor.
-    for (const incidencia of this.incidencias) {
-      await this.service.guardarSeguimientoLocal(incidencia);
+      // Actualizar el seguimiento local con los datos del servidor.
+      for (const incidencia of this.incidencias) {
+        await this.service.guardarSeguimientoLocal(incidencia);
+      }
+    } catch (error) {
+      console.error('Error al cargar incidencias:', error);
+
+      this.incidencias = await this.service.obtenerSeguimientoLocal();
+    } finally {
+      this.cargando = false;
     }
-  } catch (error) {
-    console.error('Error al cargar incidencias:', error);
-
-    this.incidencias = await this.service.obtenerSeguimientoLocal();
-  } finally {
-    this.cargando = false;
   }
-}
 
   async actualizar(event: CustomEvent): Promise<void> {
     await this.cargarIncidencias();

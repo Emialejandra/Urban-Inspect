@@ -17,6 +17,7 @@
         labelPlacement="stacked"
         placeholder="Ej. Luminaria dañada"
         [(ngModel)]="titulo"
+        (ngModelChange)="guardarBorradorAutomatico()"
         maxlength="100">
       </ion-input>
     </ion-item>
@@ -29,6 +30,7 @@
         placeholder="Describe el problema..."
         [(ngModel)]="descripcion"
         rows="4"
+        (ngModelChange)="guardarBorradorAutomatico()"
         maxlength="1000">
       </ion-textarea>
     </ion-item>
@@ -39,7 +41,9 @@
         label="Categoría"
         labelPlacement="stacked"
         placeholder="Selecciona una categoría"
-        [(ngModel)]="categoria">
+        [(ngModel)]="categoria"
+        (ngModelChange)="guardarBorradorAutomatico()">
+        
 
         <ion-select-option value="Alumbrado">
           Alumbrado público
@@ -73,7 +77,8 @@
         label="Ubicación"
         labelPlacement="stacked"
         placeholder="Calle, sector o referencia"
-        [(ngModel)]="ubicacion">
+        [(ngModel)]="ubicacion"
+        (ngModelChange)="guardarBorradorAutomatico()">
       </ion-input>
     </ion-item>
 
@@ -83,7 +88,8 @@
       fill="outline"
       type="button"
       [disabled]="obteniendoUbicacion || consultandoClima"
-      (click)="usarMiUbicacion()">
+      (click)="usarMiUbicacion()"
+      (ngModelChange)="guardarBorradorAutomatico()">
 
       <ion-icon name="locate-outline" slot="start"></ion-icon>
 

@@ -2,18 +2,21 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, firstValueFrom, timeout } from 'rxjs';
-import { Preferences } from '@capacitor/preferences';
 import { Incidencia } from '../models/incidencia.model';
+import { AlmacenamientoLocal } from './almacenamiento-local';
 
 @Injectable({ providedIn: 'root' })
 export class IncidenciaService {
     private http = inject(HttpClient);
+    private almacenamiento = inject(AlmacenamientoLocal);
 
     private apiUrl =
         'https://6ae00c298e42963c8d5ec79b.mockapi.io/incidencias';
 
     private cloudName = 'dbuttvfar';
     private uploadPreset = 'Urban-Inspect';
+
+    private readonly claveSeguimiento = 'urbaninspect_seguimiento';
 
     async subirFotografia(archivo: File): Promise<string> {
         const formulario = new FormData();
@@ -30,7 +33,6 @@ export class IncidenciaService {
         return respuesta.secure_url;
     }
 
-
     obtenerIncidencias(): Observable<Incidencia[]> {
         return this.http.get<Incidencia[]>(this.apiUrl).pipe(
             timeout(10000)
@@ -40,7 +42,7 @@ export class IncidenciaService {
     obtenerIncidenciaPorId(id: string): Observable<Incidencia> {
         return this.http
             .get<Incidencia>(`${this.apiUrl}/${id}`)
-            .pipe(timeout(10000));
+            .pipe(timeout(6000));
     }
 
     crearIncidencia(incidencia: Incidencia): Observable<Incidencia> {
@@ -49,52 +51,66 @@ export class IncidenciaService {
             .pipe(timeout(10000));
     }
 
-
     actualizarIncidencia(
         id: string,
         incidencia: Partial<Incidencia>
     ): Observable<Incidencia> {
-        return this.http.put<Incidencia>(
-            `${this.apiUrl}/${id}`,
-            incidencia
+        return this.http
+            .put<Incidencia>(`${this.apiUrl}/${id}`, incidencia)
+            .pipe(timeout(10000));
+    }
+
+    async guardarSeguimientoLocal(
+        incidencia: Incidencia
+    ): Promise<void> {
+        const actual = await this.obtenerSeguimientoLocal();
+
+        const indice = actual.findIndex(item =>
+            (
+                incidencia.id != null &&
+                String(item.id) === String(incidencia.id)
+            ) ||
+            (
+                incidencia.codigo != null &&
+                item.codigo === incidencia.codigo
+            )
+        );
+
+        if (indice !== -1) {
+            actual[indice] = {
+                ...actual[indice],
+                ...incidencia
+            };
+        } else {
+            actual.push(incidencia);
+        }
+
+        await this.almacenamiento.guardar(
+            this.claveSeguimiento,
+            actual
         );
     }
 
-    async guardarSeguimientoLocal(incidencia: Incidencia): Promise<void> {
-        const actual = await this.obtenerSeguimientoLocal();
-
-        if (!actual.some(item => item.codigo === incidencia.codigo)) {
-            actual.push(incidencia);
-
-            await Preferences.set({
-                key: 'urbaninspect_seguimiento',
-                value: JSON.stringify(actual)
-            });
-        }
-    }
-
     async obtenerSeguimientoLocal(): Promise<Incidencia[]> {
-        const { value } = await Preferences.get({
-            key: 'urbaninspect_seguimiento'
-        });
-
-        if (!value) return [];
-
-        try {
-            return JSON.parse(value) as Incidencia[];
-        } catch {
-            return [];
-        }
+        return this.almacenamiento.obtener<Incidencia[]>(
+            this.claveSeguimiento,
+            []
+        );
     }
 
-    async eliminarSeguimientoLocal(codigo: string): Promise<Incidencia[]> {
+    async eliminarSeguimientoLocal(
+        codigo: string
+    ): Promise<Incidencia[]> {
         const actual = await this.obtenerSeguimientoLocal();
-        const filtradas = actual.filter(item => item.codigo !== codigo);
 
-        await Preferences.set({
-            key: 'urbaninspect_seguimiento',
-            value: JSON.stringify(filtradas)
-        });
+        const filtradas = actual.filter(
+            item => item.codigo !== codigo
+        );
+
+        await this.almacenamiento.guardar(
+            this.claveSeguimiento,
+            filtradas
+        );
 
         return filtradas;
     }
