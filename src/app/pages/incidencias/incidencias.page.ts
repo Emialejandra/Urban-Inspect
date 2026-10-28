@@ -2,6 +2,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import {
   IonHeader,
   IonToolbar,
@@ -14,7 +15,8 @@ import {
   IonButton,
   IonIcon,
   IonBadge,
-  IonSpinner
+  IonSpinner, IonSelect, IonSelectOption,
+  IonText
 } from '@ionic/angular';
 
 import { IncidenciaService } from '../../services/incidencias.service';
@@ -38,7 +40,8 @@ import { IncidenciaService } from '../../services/incidencias.service';
     IonButton,
     IonIcon,
     IonBadge,
-    IonSpinner
+    IonSpinner, IonSelect, IonSelectOption,
+    IonText, FormsModule
   ]
 })
 export class IncidenciasPage implements OnInit {
@@ -63,7 +66,7 @@ export class IncidenciasPage implements OnInit {
     this.cargarIncidencias();
     void this.cargarSeguimientoLocal();
   }
-  
+
   // Abrir el formulario de registro
   nuevaIncidencia(): void {
     void this.router.navigate(['/tabs/registro-incidencia']);
@@ -118,4 +121,31 @@ export class IncidenciasPage implements OnInit {
       this.incidenciasLocales = [];
     }
   }
+
+
+  categoriaSeleccionada = 'Todas';
+
+  get incidenciasFiltradas(): any[] {
+    if (this.categoriaSeleccionada === 'Todas') {
+      return this.incidencias;
+    }
+
+    return this.incidencias.filter((incidencia) => {
+      const tipo = (incidencia.tipo || '').toLowerCase().trim();
+
+      const categorias: { [key: string]: string[] } = {
+        'Alumbrado': ['alumbrado', 'luminaria'],
+        'Vías': ['vías', 'vias', 'bache', 'señalización', 'senalizacion'],
+        'Basura': ['basura', 'limpieza'],
+        'Agua': ['agua', 'alcantarillado'],
+        'Espacios públicos': ['espacios públicos', 'espacios publicos'],
+        'Otro': ['otro']
+      };
+
+      const palabras = categorias[this.categoriaSeleccionada] || [];
+
+      return palabras.some(palabra => tipo.includes(palabra));
+    });
+  }
+
 }

@@ -9,7 +9,7 @@
 
     <h2>Registro de incidencias</h2>
     <p>Consulta y administra las incidencias registradas.</p>
-    
+
     <ion-button expand="block" (click)="nuevaIncidencia()">
       <ion-icon name="add-circle-outline" slot="start"></ion-icon>
       Nueva incidencia
@@ -35,7 +35,46 @@
         <ion-label>Incidencias del servidor</ion-label>
       </ion-list-header>
 
-      <ion-item *ngFor="let incidencia of incidencias">
+      <!-- Filtro de categorias -->
+
+      <ion-item>
+        <ion-select label="Filtrar por categoría" labelPlacement="stacked" placeholder="Selecciona una categoría"
+          [(ngModel)]="categoriaSeleccionada">
+
+          <ion-select-option value="Todas">
+            Todas las categorías
+          </ion-select-option>
+
+          <ion-select-option value="Alumbrado">
+            Alumbrado público
+          </ion-select-option>
+
+          <ion-select-option value="Vías">
+            Vías y aceras
+          </ion-select-option>
+
+          <ion-select-option value="Basura">
+            Basura y limpieza
+          </ion-select-option>
+
+          <ion-select-option value="Agua">
+            Agua y alcantarillado
+          </ion-select-option>
+
+          <ion-select-option value="Espacios públicos">
+            Espacios públicos
+          </ion-select-option>
+
+          <ion-select-option value="Otro">
+            Otro
+          </ion-select-option>
+
+        </ion-select>
+      </ion-item>
+
+
+
+      <ion-item *ngFor="let incidencia of incidenciasFiltradas">
         <ion-icon name="alert-circle-outline" slot="start" color="warning">
         </ion-icon>
 
