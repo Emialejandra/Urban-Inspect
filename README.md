@@ -88,4 +88,6 @@ No se incluyen claves ni contraseñas en este archivo. La configuración de los 
 
 ## Referencia académica
 
-Prueba I — Práctica UrbanInspect, asignatura Desarrollo de Aplicaciones Móviles, ESFOT — Escuela Politécnica Nacional. Completa los datos de estudiante, fecha, paralelo y URL del repositorio antes de entregar.
+Prueba I — Práctica UrbanInspect, asignatura Desarrollo de Aplicaciones Móviles, ESFOT — Escuela Politécnica Nacional.
+Emilia Tana 
+Apps móviles GR-1
