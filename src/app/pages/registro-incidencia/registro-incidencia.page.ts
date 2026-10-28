@@ -1,6 +1,7 @@
 
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import {
@@ -10,6 +11,7 @@ import {
   IonIcon,
   IonInput,
   IonItem,
+  IonLabel,
   IonSelect,
   IonSelectOption,
   IonSpinner,
@@ -17,13 +19,13 @@ import {
   IonTitle,
   IonToolbar
 } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 
 import {
   Incidencia,
   PrioridadIncidencia
 } from '../../models/incidencia.model';
+import { ClimaService } from '../../services/clima.service';
 import { IncidenciaService } from '../../services/incidencias.service';
 import { Ubicacion } from '../../services/ubicacion';
 
@@ -41,6 +43,7 @@ import { Ubicacion } from '../../services/ubicacion';
     IonIcon,
     IonInput,
     IonItem,
+    IonLabel,
     IonSelect,
     IonSelectOption,
     IonSpinner,
@@ -66,12 +69,24 @@ export class RegistroIncidenciaPage {
 
   guardando = false;
 
+  // Información meteorológica
+  clima: {
+    temperatura: number;
+    descripcion: string;
+    precipitacion: number;
+  } | null = null;
+
+  consultandoClima = false;
+  climaConsultado = false;
+  obteniendoUbicacion = false;
+
   constructor(
     private incidenciaService: IncidenciaService,
     private ubicacionService: Ubicacion,
     private alertController: AlertController,
-    private router: Router
-  ) { }
+    private router: Router,
+    private climaService: ClimaService
+  ) {}
 
   onArchivoSeleccionado(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -108,6 +123,12 @@ export class RegistroIncidenciaPage {
   }
 
   async usarMiUbicacion(): Promise<void> {
+    if (this.obteniendoUbicacion) {
+      return;
+    }
+
+    this.obteniendoUbicacion = true;
+
     try {
       this.coordenadas =
         await this.ubicacionService.obtenerCoordenadas();
@@ -117,16 +138,65 @@ export class RegistroIncidenciaPage {
           `${this.coordenadas.latitud.toFixed(5)}, ` +
           `${this.coordenadas.longitud.toFixed(5)}`;
       }
-    } catch {
+
+      await this.consultarClima();
+    } catch (error) {
+      console.error('Error al obtener la ubicación:', error);
+
+      this.coordenadas = null;
+      this.clima = null;
+      this.climaConsultado = false;
+
       await this.mostrarAlerta(
         'Ubicación no disponible',
-        'Activa el GPS y permite el acceso a la ubicación para volver a intentarlo.'
+        'No se pudo obtener tu ubicación. Comprueba los permisos del GPS. Puedes continuar con el registro si tienes una dirección válida.'
       );
+    } finally {
+      this.obteniendoUbicacion = false;
     }
   }
 
+  async consultarClima(): Promise<void> {
+    if (!this.coordenadas) {
+      this.clima = null;
+      this.climaConsultado = false;
+      return;
+    }
+
+    this.consultandoClima = true;
+    this.climaConsultado = false;
+    this.clima = null;
+
+    try {
+      const resultado = await firstValueFrom(
+        this.climaService.obtenerClima(
+          this.coordenadas.latitud,
+          this.coordenadas.longitud
+        )
+      );
+
+      if (
+        resultado &&
+        Number.isFinite(resultado.temperatura) &&
+        Number.isFinite(resultado.precipitacion) &&
+        typeof resultado.descripcion === 'string'
+      ) {
+        this.clima = resultado;
+      }
+    } catch (error) {
+      console.error('Error al consultar el clima:', error);
+      this.clima = null;
+    } finally {
+      this.consultandoClima = false;
+      this.climaConsultado = true;
+    }
+  }
 
   async registrarIncidencia(): Promise<void> {
+    if (this.guardando) {
+      return;
+    }
+
     if (
       !this.titulo.trim() ||
       !this.descripcion.trim() ||
@@ -140,12 +210,24 @@ export class RegistroIncidenciaPage {
       return;
     }
 
+    // Consultar el clima si hay coordenadas y todavía no se ha intentado.
+    if (this.coordenadas && !this.climaConsultado) {
+      await this.consultarClima();
+    }
+
+    // El clima no bloquea el registro si falla o no hay GPS.
+    if (!this.clima) {
+      await this.mostrarAlerta(
+        'Información meteorológica',
+        'No se dispone de información meteorológica válida. La incidencia podrá registrarse igualmente.'
+      );
+    }
+
     this.guardando = true;
 
     try {
       let urlFotografia = '';
 
-      // La fotografía es opcional para evitar bloquear el registro.
       if (this.archivo) {
         try {
           urlFotografia =
@@ -175,17 +257,16 @@ export class RegistroIncidenciaPage {
         observacion: this.titulo.trim()
       };
 
-      // Guardar primero en MockAPI.
+      // Guardar en MockAPI.
       const guardada = await firstValueFrom(
         this.incidenciaService.crearIncidencia(incidencia)
       );
 
-      // Sin respuesta válida no se debe simular un registro exitoso.
       if (!guardada) {
         throw new Error('La API no devolvió la incidencia guardada.');
       }
 
-      // Actualizar el seguimiento local.
+      // Guardar también en el seguimiento local.
       await this.incidenciaService.guardarSeguimientoLocal(guardada);
 
       await this.mostrarAlerta(
@@ -202,8 +283,8 @@ export class RegistroIncidenciaPage {
       await this.mostrarAlerta(
         'Error al registrar',
         error?.error?.message ||
-        error?.message ||
-        'No se pudo guardar la incidencia. Comprueba la conexión con MockAPI.'
+          error?.message ||
+          'No se pudo guardar la incidencia. Comprueba la conexión con MockAPI.'
       );
     } finally {
       this.guardando = false;
@@ -223,6 +304,11 @@ export class RegistroIncidenciaPage {
     this.archivo = null;
     this.vistaPrevia = null;
     this.coordenadas = null;
+
+    this.clima = null;
+    this.consultandoClima = false;
+    this.climaConsultado = false;
+    this.obteniendoUbicacion = false;
   }
 
   private async mostrarAlerta(

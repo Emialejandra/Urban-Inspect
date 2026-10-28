@@ -10,6 +10,7 @@
     <h2>Reportar un problema</h2>
     <p>Describe lo ocurrido y adjunta una fotografía.</p>
 
+    <!-- Título -->
     <ion-item>
       <ion-input
         label="Título"
@@ -20,6 +21,7 @@
       </ion-input>
     </ion-item>
 
+    <!-- Descripción -->
     <ion-item>
       <ion-textarea
         label="Descripción"
@@ -31,21 +33,41 @@
       </ion-textarea>
     </ion-item>
 
+    <!-- Categoría -->
     <ion-item>
       <ion-select
         label="Categoría"
         labelPlacement="stacked"
         placeholder="Selecciona una categoría"
         [(ngModel)]="categoria">
-        <ion-select-option value="Alumbrado">Alumbrado público</ion-select-option>
-        <ion-select-option value="Vías">Vías y aceras</ion-select-option>
-        <ion-select-option value="Basura">Basura y limpieza</ion-select-option>
-        <ion-select-option value="Agua">Agua y alcantarillado</ion-select-option>
-        <ion-select-option value="Espacios públicos">Espacios públicos</ion-select-option>
-        <ion-select-option value="Otro">Otro</ion-select-option>
+
+        <ion-select-option value="Alumbrado">
+          Alumbrado público
+        </ion-select-option>
+
+        <ion-select-option value="Vías">
+          Vías y aceras
+        </ion-select-option>
+
+        <ion-select-option value="Basura">
+          Basura y limpieza
+        </ion-select-option>
+
+        <ion-select-option value="Agua">
+          Agua y alcantarillado
+        </ion-select-option>
+
+        <ion-select-option value="Espacios públicos">
+          Espacios públicos
+        </ion-select-option>
+
+        <ion-select-option value="Otro">
+          Otro
+        </ion-select-option>
       </ion-select>
     </ion-item>
 
+    <!-- Ubicación -->
     <ion-item>
       <ion-input
         label="Ubicación"
@@ -55,11 +77,103 @@
       </ion-input>
     </ion-item>
 
-    <ion-button expand="block" fill="outline" type="button" (click)="usarMiUbicacion()">
+    <!-- Botón GPS -->
+    <ion-button
+      expand="block"
+      fill="outline"
+      type="button"
+      [disabled]="obteniendoUbicacion || consultandoClima"
+      (click)="usarMiUbicacion()">
+
       <ion-icon name="locate-outline" slot="start"></ion-icon>
-      Usar mi ubicación actual
+
+      <span *ngIf="!obteniendoUbicacion">
+        Usar mi ubicación actual
+      </span>
+
+      <span *ngIf="obteniendoUbicacion">
+        Obteniendo ubicación...
+      </span>
     </ion-button>
 
+    <!-- Información meteorológica -->
+    <div class="clima-card">
+      <h3>
+        <span aria-hidden="true">🌦️</span>
+        Condiciones meteorológicas
+      </h3>
+
+      <!-- Cargando clima -->
+      <div
+        *ngIf="consultandoClima"
+        class="aviso-clima">
+
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Consultando el clima de tu ubicación...</p>
+      </div>
+
+      <!-- Datos del clima -->
+      <ng-container *ngIf="clima as datosClima">
+
+        <ion-item>
+          <ion-label>
+            <h2> Temperatura actual</h2>
+            <p>{{ datosClima.temperatura }} °C</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            <h2> Precipitación en la última hora</h2>
+            <p>{{ datosClima.precipitacion }} mm</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            <h2> Condición del clima</h2>
+            <p>{{ datosClima.descripcion }}</p>
+          </ion-label>
+        </ion-item>
+
+        <!-- Advertencia por lluvia -->
+        <div
+          *ngIf="datosClima.precipitacion > 5"
+          class="alerta-lluvia">
+
+          <span aria-hidden="true"></span>
+
+          <p>
+            La precipitación supera los 5 mm.
+            El mantenimiento podría presentar dificultades.
+          </p>
+        </div>
+      </ng-container>
+
+      <!-- Error o falta de información meteorológica -->
+      <div
+        *ngIf="climaConsultado && !clima && !consultandoClima"
+        class="aviso-clima">
+
+        <p>
+           No se pudo obtener la información meteorológica.
+          Puedes continuar con el registro.
+        </p>
+      </div>
+
+      <!-- Estado inicial -->
+      <p
+        *ngIf="!coordenadas && !consultandoClima
+          && !climaConsultado && !obteniendoUbicacion"
+        class="aviso-clima">
+
+        Obtén tu ubicación actual para consultar las condiciones
+        meteorológicas. Si no es posible consultar el clima,
+        podrás continuar con el registro.
+      </p>
+    </div>
+
+    <!-- Fotografía -->
     <div class="fotografia">
       <h3>Fotografía de la incidencia</h3>
 
@@ -76,18 +190,26 @@
         class="vista-previa">
     </div>
 
+    <!-- Botón de registro -->
     <ion-button
       expand="block"
       class="boton-registrar"
-      [disabled]="guardando"
+      [disabled]="guardando || consultandoClima || obteniendoUbicacion"
       (click)="registrarIncidencia()">
+
       <ion-spinner
         *ngIf="guardando"
         name="crescent">
       </ion-spinner>
 
-      <span *ngIf="!guardando">Registrar incidencia</span>
-      <span *ngIf="guardando">Guardando...</span>
+      <span *ngIf="!guardando">
+        Registrar incidencia
+      </span>
+
+      <span *ngIf="guardando">
+        Guardando...
+      </span>
     </ion-button>
+
   </div>
 </ion-content>
