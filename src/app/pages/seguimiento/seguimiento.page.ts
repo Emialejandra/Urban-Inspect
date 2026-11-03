@@ -1,11 +1,27 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectorRef, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonChip, IonContent, IonHeader, IonIcon, IonRefresher, IonRefresherContent, IonSpinner, IonTitle, IonToolbar } from '@ionic/angular';
+import {
+  IonButton,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardSubtitle,
+  IonCardTitle,
+  IonChip,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonRefresher,
+  IonRefresherContent,
+  IonSpinner,
+  IonTitle,
+  IonToolbar, 
+} from '@ionic/angular';
+
 import { Incidencia } from '../../models/incidencia.model';
 import { IncidenciaService } from '../../services/incidencias.service';
-import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-seguimiento',
@@ -14,71 +30,120 @@ import { firstValueFrom } from 'rxjs';
   standalone: true,
   imports: [
     CommonModule,
-    IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle,
-    IonCardTitle, IonChip, IonContent, IonHeader, IonIcon,
-    IonRefresher, IonRefresherContent, IonSpinner, IonTitle, IonToolbar
+    IonButton,
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
+    IonCardSubtitle,
+    IonCardTitle,
+    IonChip,
+    IonContent,
+    IonHeader,
+    IonIcon,
+    IonRefresher,
+    IonRefresherContent,
+    IonSpinner,
+    IonTitle,
+    IonToolbar
   ]
 })
-export class SeguimientoPage implements OnInit {
+export class SeguimientoPage{
+
+  private service = inject(IncidenciaService);
+  private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
+
   incidencias: Incidencia[] = [];
   cargando = false;
 
-  constructor(
-    private service: IncidenciaService,
-    private router: Router
-  ) { }
-
-  ngOnInit(): void {
-    this.cargarIncidencias();
+  ionViewWillEnter(): void {
+    void this.cargarIncidencias();
   }
 
-  async ionViewWillEnter(): Promise<void> {
-    await this.cargarIncidencias();
-  }
-
+  //consultar incidencias guardadas localemnete 
   async cargarIncidencias(): Promise<void> {
-    this.cargando = true;
+
+    this.cargando =true;
 
     try {
-      this.incidencias = await firstValueFrom(
-        this.service.obtenerIncidencias()
+
+      console.log('Cargando incidencias en seguimiento local...');
+
+      this.incidencias =
+        await this.service.obtenerSeguimientoLocal();
+
+        console.log('Incidencias en seguimiento:', this.incidencias);
+
+        console.log(
+          'Total de incidencias:', this.incidencias.length
+        );
+    } catch (error) {
+
+      console.error(
+        'Error al cargar el seguimiento local:', error
       );
 
-      // Actualizar el seguimiento local con los datos del servidor.
-      for (const incidencia of this.incidencias) {
-        await this.service.guardarSeguimientoLocal(incidencia);
-      }
-    } catch (error) {
-      console.error('Error al cargar incidencias:', error);
-
-      this.incidencias = await this.service.obtenerSeguimientoLocal();
+      this.incidencias =[];
     } finally {
+
       this.cargando = false;
+      this.cdr.detectChanges();
+
+      console.log('Carga de seguimiento finalizada.')
     }
   }
-
+  
+  //actualizar mediante el gestor de ionic 
   async actualizar(event: CustomEvent): Promise<void> {
+
     await this.cargarIncidencias();
     (event.target as HTMLIonRefresherElement).complete();
   }
 
+  //abrir detalle de incidencia
   verDetalle(incidencia: Incidencia): void {
     if (!incidencia.id) {
+      console.error('La incidencia no tiene un ID valido.');
       return;
     }
 
-    this.router.navigate(['/detalle-incidencia', incidencia.id]);
+    void this.router.navigate([
+      '/detalle-incidencia',
+      incidencia.id
+    ]);
   }
 
-  estadoColor(estado: string): string {
-    switch (estado?.toLowerCase()) {
+  //colores segun el estado 
+  estadoColor(esatdo: string) : string {
+    switch (esatdo?.toLowerCase()) {
       case 'resuelta':
       case 'resuelto':
         return 'success';
+
       case 'en proceso':
         return 'warning';
+
       default:
         return 'medium';
     }
+  }
+
+  //eliminar una incidencia del seguimiento 
+  async eliminarSeguimiento(codigo: string): Promise<void> {
+
+    try {
+
+      this.incidencias=
+        await this.service.eliminarSeguimientoLocal(codigo);
+
+      this.cdr.detectChanges();
+
+      console.log('Seguimiento eliminado: ', codigo);
+    } catch (error) {
+
+      console.error(
+        'Error al eliminar el seguimiento local:', error
+      );
+    } 
   }
 }

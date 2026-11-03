@@ -31,9 +31,6 @@
 
     <!-- Incidencias del servidor -->
     <ion-list *ngIf="incidencias && incidencias.length > 0">
-      <ion-list-header>
-        <ion-label>Incidencias del servidor</ion-label>
-      </ion-list-header>
 
       <!-- Filtro de categorias -->
 
@@ -72,8 +69,7 @@
         </ion-select>
       </ion-item>
 
-
-
+      
       <ion-item *ngFor="let incidencia of incidenciasFiltradas">
         <ion-icon name="alert-circle-outline" slot="start" color="warning">
         </ion-icon>

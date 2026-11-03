@@ -1,5 +1,5 @@
 
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -20,6 +20,7 @@ import {
 } from '@ionic/angular';
 
 import { IncidenciaService } from '../../services/incidencias.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-incidencias',
@@ -48,6 +49,8 @@ export class IncidenciasPage implements OnInit {
 
   private incidenciaService = inject(IncidenciaService);
 
+  private cdr = inject(ChangeDetectorRef);
+  
   constructor(private router: Router) { }
 
   incidencias: any[] = [];
@@ -58,8 +61,6 @@ export class IncidenciasPage implements OnInit {
   hayMasIncidencias = false;
 
   ngOnInit(): void {
-    this.cargarIncidencias();
-    void this.cargarSeguimientoLocal();
   }
 
   ionViewWillEnter(): void {
@@ -74,23 +75,54 @@ export class IncidenciasPage implements OnInit {
 
   // Consultar incidencias en MockAPI
   cargarIncidencias(): void {
+    console.log('Consultando incidencias en MockAPI...');
+
     this.cargando = true;
     this.mensajeError = '';
 
-    this.incidenciaService.obtenerIncidencias().subscribe({
-      next: (data) => {
-        this.incidencias = Array.isArray(data) ? data : [];
-        this.cargando = false;
-      },
-      error: (error) => {
-        console.error('Error al cargar incidencias:', error);
+    this.incidenciaService.obtenerIncidencias()
+      .pipe(
+        finalize(() => {
+          this.cargando = false;
+          this.cdr.detectChanges();
 
-        this.mensajeError =
-          'No se pudieron cargar las incidencias. Comprueba tu conexión e inténtalo de nuevo.';
+          console.log('Finalizó la consulta de incidencias.');
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          console.log('Respuesta completa:', data);
 
-        this.cargando = false;
-      }
-    });
+          if (!Array.isArray(data)) {
+            console.error('La respuesta no es un arreglo.');
+
+            this.incidencias = [];
+            this.mensajeError = 'Formato de respuesta incorrecto.';
+            this.cdr.detectChanges();
+
+            return;
+          }
+
+          // Asignar los registros recibidos
+          this.incidencias = [...data];
+
+          console.log('Primera incidencia:', this.incidencias[0]);
+          console.log('Total asignado:', this.incidencias.length);
+          console.log('Incidencias:', this.incidencias);
+
+          // Actualizar la pantalla   
+          this.cdr.detectChanges();
+        },
+
+        error: (error) => {
+          console.error('Error al cargar incidencias:', error);
+
+          this.mensajeError =
+            'No se pudieron cargar las incidencias. Comprueba tu conexión.';
+
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   // Volver a consultar el servidor

@@ -1,4 +1,3 @@
-
 <ion-header>
   <ion-toolbar color="primary">
     <ion-title>Seguimiento</ion-title>
@@ -26,14 +25,9 @@
     <p>Todavía no hay incidencias disponibles.</p>
   </div>
 
-  <ion-card
-    *ngFor="let incidencia of incidencias"
-    button
-    (click)="verDetalle(incidencia)">
+  <ion-card *ngFor="let incidencia of incidencias" button (click)="verDetalle(incidencia)">
 
-    <img
-      *ngIf="incidencia.fotografia"
-      [src]="incidencia.fotografia"
+    <img *ngIf="incidencia.fotografia" [src]="incidencia.fotografia"
       [alt]="incidencia.titulo || incidencia.tipo || 'Incidencia'">
 
     <ion-card-header>
@@ -66,6 +60,11 @@
         Ver detalle
         <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
       </ion-button>
+
+      <ion-button fill="clear" color="danger"
+        (click)="$event.stopPropagation(); eliminarSeguimiento(incidencia.codigo)"> <ion-icon name="trash-outline"
+          slot="start"></ion-icon> Dejar de seguir </ion-button>
+          
     </ion-card-content>
   </ion-card>
 </ion-content>

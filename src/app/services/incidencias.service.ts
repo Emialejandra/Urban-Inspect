@@ -34,6 +34,8 @@ export class IncidenciaService {
     }
 
     obtenerIncidencias(): Observable<Incidencia[]> {
+        console.log('URL de consulta:', this.apiUrl);
+        
         return this.http.get<Incidencia[]>(this.apiUrl).pipe(
             timeout(10000)
         );
