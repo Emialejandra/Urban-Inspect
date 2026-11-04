@@ -1,188 +1,162 @@
-
 :host {
   display: block;
 }
 
 .contenedor {
   width: 100%;
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: 20px 16px 36px;
+  padding: 20px 16px 38px;
   box-sizing: border-box;
 }
 
-.contenedor > h2 {
-  margin: 24px 0 8px;
-  color: #172b4d;
+.contenedor>h2 {
+  margin: 24px 0 7px;
+  color: #343b35;
   font-size: 1.2rem;
-  font-weight: 750;
-  letter-spacing: -0.3px;
+  font-weight: 800;
+  letter-spacing: -.2px;
 }
 
-.contenedor > h2:first-child {
+.contenedor>h2:first-child {
   margin-top: 8px;
 }
 
-.contenedor > p {
+.contenedor>p {
   margin: 0 0 16px;
-  color: #64748b;
-  font-size: 0.92rem;
+  color: #777b72;
+  font-size: .91rem;
   line-height: 1.55;
 }
 
-ion-toolbar {
-  --min-height: 58px;
-}
-
-ion-title {
-  font-size: 1.08rem;
-  font-weight: 750;
-}
-
 ion-button.boton-nueva {
-  --background: #2457c5;
-  --background-hover: #1d469e;
-  --background-activated: #173b85;
-  --color: #ffffff;
-  --border-radius: 14px;
-  --box-shadow: 0 5px 14px rgba(36, 87, 197, 0.18);
-
+  --background: #792c32;
+  --background-hover: #68252a;
+  --background-activated: #5c2025;
+  --color: #fff;
+  --border-radius: 12px;
+  --box-shadow: 0 5px 13px rgba(121, 44, 50, .17);
   min-height: 49px;
-  margin: 20px 0;
-  font-size: 0.96rem;
-  font-weight: 700;
+  margin: 18px 0 21px;
 }
 
 ion-list {
   margin: 12px 0 20px;
-  padding: 0;
   background: transparent;
 }
 
-ion-list-header {
-  min-height: 42px;
-  padding-inline: 4px;
-  color: #334155;
-  font-size: 0.98rem;
-  font-weight: 750;
-}
-
-ion-item {
-  --background: #ffffff;
-  --color: #172033;
+ion-list>ion-item {
+  --background: #fffefa;
   --border-color: transparent;
   --inner-padding-end: 12px;
   --padding-start: 12px;
-
   margin: 0 0 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.045);
+  border: 1px solid #e7e2d8;
+  border-radius: 15px;
+  box-shadow: 0 4px 14px rgba(48, 49, 40, .045);
   overflow: hidden;
 }
 
-ion-item h2 {
-  margin: 5px 0 10px;
-  color: #1e3a5f;
-  font-size: 0.96rem;
-  font-weight: 750;
+ion-list>ion-item h2 {
+  margin: 5px 0 9px;
+  color: #343b35;
+  font-size: .96rem;
+  font-weight: 800;
   line-height: 1.4;
 }
 
-ion-item p {
-  margin: 7px 0;
-  color: #64748b;
-  font-size: 0.86rem;
+ion-list>ion-item p {
+  margin: 6px 0;
+  color: #777b72;
+  font-size: .84rem;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
 
-ion-item strong {
-  color: #334155;
-  font-weight: 700;
+ion-list>ion-item strong {
+  color: #454b43;
+  font-weight: 750;
 }
 
 .acciones-incidencia {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 6px;
-  min-width: 88px;
+  gap: 7px;
+  min-width: 91px;
 }
 
 .acciones-incidencia ion-button {
   margin: 0;
-  font-size: 0.78rem;
-  font-weight: 650;
+  font-size: .76rem;
   --border-radius: 9px;
 }
 
-ion-badge {
-  align-self: flex-end;
-  max-width: 100%;
+.acciones-incidencia ion-button[color="tertiary"] {
+  --background: #52645a;
+  --color: #fff;
+}
+
+.acciones-incidencia ion-button[color="primary"] {
+  --color: #792c32;
+  --border-color: #792c32;
+}
+
+.acciones-incidencia ion-badge {
+  align-self: stretch;
   white-space: normal;
   text-align: center;
+  text-transform: capitalize;
 }
 
 .foto-incidencia {
   display: block;
   width: 100%;
   max-width: 260px;
-  max-height: 190px;
+  max-height: 185px;
   margin: 12px 0 6px;
-  border-radius: 12px;
+  border-radius: 11px;
   object-fit: cover;
-  background: #eef2f7;
 }
 
 .estado-carga {
   margin: 24px 0;
-  padding: 24px 16px;
-  color: #64748b;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-}
-
-.estado-carga ion-spinner {
-  width: 32px;
-  height: 32px;
-  color: #2457c5;
+  padding: 25px 16px;
+  color: #777b72;
+  background: #fffefa;
+  border: 1px solid #e7e2d8;
+  border-radius: 15px;
 }
 
 .separador-seccion {
   margin: 30px 0;
   border: 0;
-  border-top: 1px solid #dbe4f0;
+  border-top: 1px solid #ded9ce;
 }
 
-@media (max-width: 520px) {
+@media(max-width:520px) {
   .contenedor {
-    padding: 16px 12px 28px;
+    padding: 15px 11px 28px;
   }
 
-  .contenedor > h2 {
-    font-size: 1.1rem;
+  ion-list>ion-item {
+    --padding-start: 8px;
+    --inner-padding-end: 7px;
   }
 
-  ion-item {
-    --padding-start: 9px;
-    --inner-padding-end: 8px;
+  ion-list>ion-item h2 {
+    font-size: .88rem;
   }
 
-  ion-item h2 {
-    font-size: 0.9rem;
-  }
-
-  ion-item p {
-    font-size: 0.81rem;
+  ion-list>ion-item p {
+    font-size: .79rem;
   }
 
   .acciones-incidencia {
-    min-width: 74px;
+    min-width: 75px;
   }
 
   .acciones-incidencia ion-button {
-    font-size: 0.72rem;
+    font-size: .69rem;
   }
 }

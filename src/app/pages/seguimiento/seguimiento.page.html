@@ -48,7 +48,15 @@
         {{ incidencia.ubicacion || incidencia.direccion || incidencia.sector || 'Ubicación no especificada' }}
       </p>
 
-      <ion-chip [color]="estadoColor(incidencia.estado)">
+      <ion-chip [ngClass]="
+    incidencia.estado === 'resuelta' ||
+    incidencia.estado === 'terminada'
+      ? 'estado-resuelta'
+      : incidencia.estado === 'en_proceso' ||
+        incidencia.estado === 'en proceso'
+      ? 'estado-en-proceso'
+      : 'estado-pendiente'
+  ">
         {{ incidencia.estado || 'Pendiente' }}
       </ion-chip>
 
@@ -64,7 +72,7 @@
       <ion-button fill="clear" color="danger"
         (click)="$event.stopPropagation(); eliminarSeguimiento(incidencia.codigo)"> <ion-icon name="trash-outline"
           slot="start"></ion-icon> Dejar de seguir </ion-button>
-          
+
     </ion-card-content>
   </ion-card>
 </ion-content>

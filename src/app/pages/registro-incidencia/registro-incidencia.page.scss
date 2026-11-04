@@ -1,119 +1,474 @@
 ion-content {
-  --background: #f4f7fb;
+  --background: #f3f1eb;
 }
 
-form {
+.formulario {
   width: 100%;
-  max-width: 640px;
+  max-width: 680px;
   margin: 0 auto;
-  padding: 16px 12px 28px;
-  box-sizing: border-box;
+  padding: 12px 4px 30px;
 }
 
-ion-item {
-  --background: #ffffff;
-  --border-color: #e2e8f0;
+.formulario>h2 {
+  margin: 8px 0 7px;
+  color: #343b35;
+  font-size: 1.42rem;
+  font-weight: 800;
+}
+
+.formulario>p {
+  margin: 0 0 22px;
+  color: #777b72;
+  font-size: .91rem;
+  line-height: 1.5;
+}
+
+.formulario ion-item {
+  --background: #fffefa;
+  --border-color: #e4e0d6;
   --border-radius: 12px;
-  --padding-start: 12px;
+  --padding-start: 13px;
   margin-bottom: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #e7e2d8;
   border-radius: 12px;
   overflow: hidden;
 }
 
-ion-button[type="submit"] {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  min-height: 46px;
+.formulario ion-item:focus-within {
+  border-color: #b18a55;
+}
+
+.seccion-titulo {
+  margin: 21px 0 10px 4px;
+  color: #343b35;
+  font-size: .96rem;
+  font-weight: 800;
+  letter-spacing: .25px;
+}
+
+.formulario ion-button {
+  --border-radius: 11px;
+  font-weight: 750;
+}
+
+.boton-gps,
+.formulario ion-button[fill="outline"] {
+  --color: #52645a;
+  --border-color: #52645a;
+  --background: transparent;
+  margin: 9px 0 14px;
+  min-height: 43px;
+}
+
+.boton-registrar {
+  --background: #792c32;
+  --background-hover: #68252a;
+  --color: #fff;
+  --border-radius: 12px;
+  min-height: 49px;
+  margin: 22px 0 16px;
+  box-shadow: 0 5px 13px rgba(121, 44, 50, .15);
+}
+
+.clima-card {
+  margin: 20px 0;
+  padding: 17px;
+  background: #fffefa;
+  border: 1px solid #e7e2d8;
+  border-radius: 15px;
+}
+
+.clima-card h3,
+.fotografia h3 {
+  margin: 0 0 13px;
+  color: #343b35;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.clima-card ion-item {
+  margin-bottom: 8px;
+}
+
+.clima-card ion-item h2 {
+  color: #454b43;
+  font-size: .88rem;
+  font-weight: 750;
+}
+
+.clima-card ion-item p {
+  color: #777b72;
+  font-size: .87rem;
+}
+
+.aviso-clima {
+  padding: 11px 13px;
+  color: #6d685c;
+  background: #f5f0e5;
+  border-radius: 10px;
+  font-size: .85rem;
+}
+
+.alerta-lluvia {
+  margin-top: 12px;
+  padding: 12px;
+  color: #805514;
+  background: #fff0d2;
+  border: 1px solid #efd49d;
+  border-radius: 10px;
+  font-size: .86rem;
+}
+
+.alerta-lluvia p {
+  margin: 0;
+}
+
+.fotografia {
+  margin: 23px 4px;
+  padding: 16px;
+  background: #fffefa;
+  border: 1px solid #e7e2d8;
+  border-radius: 14px;
+}
+
+.fotografia input[type="file"] {
+  width: 100%;
+  color: #777b72;
+  font-size: .83rem;
+}
+
+.vista-previa,
+.vista-previa-foto {
+  display: block;
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-top: 14px;
+  border: 1px solid #e4e0d6;
 }
 
 ion-note {
   white-space: normal;
 }
 
-.vista-previa-foto {
-  width: 100%;
-  max-height: 200px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin: 10px 0;
-  border: 1px solid #cbd5e1;
+@media(max-width:480px) {
+  .formulario {
+    padding: 8px 0 24px;
+  }
 }
 
-.seccion-titulo {
-  margin: 20px 0 10px 4px;
-  color: #475569;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.4px;
+.ayuda-coordenadas {
+  margin: 4px 5px 12px;
+  color: #777b72;
+  font-size: .84rem;
+  line-height: 1.45;
 }
 
-@media (max-width: 480px) {
-  form {
-    padding: 12px 4px 24px;
+.coordenadas-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.coordenadas-grid ion-item {
+  min-width: 0;
+  margin-bottom: 8px;
+}
+
+.boton-clima {
+  --background: #52645a;
+  --background-hover: #435349;
+  --color: #fff;
+  --border-radius: 11px;
+  min-height: 45px;
+  margin: 8px 0 18px;
+  font-weight: 750;
+}
+
+@media(max-width:380px) {
+  .coordenadas-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
   }
 }
 
 
-.boton-gps {
-  --background: #2457c5;
-  --background-hover: #1d469e;
-  --background-activated: #173b85;
-  --color: #ffffff;
-  --border-radius: 10px;
-  --box-shadow: 0 3px 8px rgba(36, 87, 197, 0.25);
-
-  font-weight: 600;
-  font-size: 13px;
-  margin: 8px 0 12px;
-  min-height: 10px;
-  
+/* TARJETAS DE UBICACIÓN Y CLIMA */
+.tarjeta-seccion {
+  background: #ffffff;
+  border: 1px solid #e8e4dc;
+  border-radius: 18px;
+  padding: 20px;
+  margin: 18px 0;
+  box-shadow: 0 4px 14px rgba(45, 45, 35, 0.06);
 }
 
-
-.formulario {
-  max-width: 650px;
-  margin: 0 auto;
-}
-
-.formulario h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--ion-color-primary);
-}
-
-.formulario p {
-  color: var(--ion-color-medium);
+.tarjeta-encabezado {
+  display: flex;
+  align-items: center;
+  gap: 13px;
   margin-bottom: 20px;
 }
 
-ion-item {
-  --border-radius: 12px;
-  --border-color: #dce3ec;
-  margin-bottom: 12px;
+.icono-seccion {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-icon {
+    font-size: 24px;
+    display: block;
+  }
 }
 
-.fotografia {
-  margin: 24px 4px;
+.icono-ubicacion {
+  background: #f4e9e7;
+  color: #792c32;
 }
 
-.fotografia h3 {
-  font-size: 1rem;
+.icono-clima {
+  background: #f5eee2;
+  color: #a77d43;
+
+  ion-icon {
+    font-size: 24px;
+    display: block;
+  }
+}
+
+.encabezado-texto {
+  h2 {
+    color: #343b35;
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0 0 5px;
+  }
+
+  p {
+    color: #85877f;
+    font-size: 12px;
+    margin: 0;
+  }
+}
+
+/* BOTÓN GPS */
+.boton-gps {
+  --background: #792c32;
+  --background-hover: #632329;
+  --color: #ffffff;
+  --border-radius: 11px;
   font-weight: 600;
-  margin-bottom: 14px;
+  height: 46px;
+  margin: 0;
 }
 
-.vista-previa {
-  display: block;
-  width: 100%;
-  max-height: 260px;
-  object-fit: cover;
-  border-radius: 14px;
-  margin-top: 16px;
+/* SEPARADOR */
+.separador-ubicacion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 22px 0 18px;
+  color: #898b83;
+  font-size: 11px;
+  text-align: center;
+
+  &::before,
+  &::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    background: #e8e4dc;
+  }
 }
 
-.boton-registrar {
-  margin-top: 20px;
-  --border-radius: 12px;
-  min-height: 48px;
+/* CAMPOS DE COORDENADAS */
+.coordenadas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.campo-coordenada {
+  ion-label {
+    display: block;
+    color: #454a43;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  ion-item {
+    --background: #f7f6f2;
+    --border-radius: 10px;
+    --padding-start: 10px;
+    --inner-padding-end: 8px;
+    border: 1px solid #e7e3da;
+    border-radius: 10px;
+  }
+
+  ion-input {
+    --color: #343b35;
+    font-size: 14px;
+  }
+}
+
+.estado-coordenadas {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 14px;
+  padding: 10px;
+  background: #eaf4ed;
+  border-radius: 9px;
+  color: #347348;
+  font-size: 12px;
+  font-weight: 600;
+
+  ion-icon {
+    font-size: 18px;
+  }
+}
+
+.ayuda-coordenadas {
+  color: #85877f;
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 13px 0 0;
+}
+
+/* TARJETA DEL CLIMA */
+.boton-clima {
+  --background: #a77d43;
+  --background-hover: #896638;
+  --color: #ffffff;
+  --border-radius: 11px;
+  font-weight: 600;
+  height: 46px;
+  margin: 0;
+}
+
+.mensaje-clima-inicial {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 13px;
+  margin-top: 15px;
+  background: #f7f5f0;
+  border-radius: 10px;
+  color: #77786f;
+
+  ion-icon {
+    color: #a77d43;
+    font-size: 19px;
+    min-width: 19px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+}
+
+.clima-resultados {
+  margin-top: 17px;
+}
+
+.clima-principal {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 16px;
+  background: #f7f5f0;
+  border-radius: 12px;
+  margin-bottom: 12px;
+
+  ion-icon {
+    font-size: 32px;
+    color: #a77d43;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  span {
+    color: #85877f;
+    font-size: 12px;
+  }
+
+  strong {
+    color: #343b35;
+    font-size: 23px;
+  }
+}
+
+.clima-datos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.dato-clima {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 13px;
+  background: #faf9f6;
+  border: 1px solid #eeeae2;
+  border-radius: 10px;
+
+  ion-icon {
+    font-size: 20px;
+    color: #a77d43;
+  }
+
+  span {
+    color: #85877f;
+    font-size: 11px;
+  }
+
+  strong {
+    color: #343b35;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+}
+
+.alerta-lluvia {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 13px;
+  padding: 13px;
+  border-radius: 10px;
+  background: #fff2df;
+  color: #94601f;
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 600;
+
+  ion-icon {
+    font-size: 19px;
+    min-width: 19px;
+  }
+}
+
+/* ADAPTACIÓN PARA PANTALLAS PEQUEÑAS */
+@media (max-width: 360px) {
+  .tarjeta-seccion {
+    padding: 15px;
+  }
+
+  .coordenadas-grid {
+    grid-template-columns: 1fr;
+  }
 }

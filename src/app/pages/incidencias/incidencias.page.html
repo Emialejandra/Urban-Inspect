@@ -92,7 +92,7 @@
         </ion-label>
 
         <div slot="end" class="acciones-incidencia">
-          <ion-badge color="warning">
+          <ion-badge [ngClass]="incidencia.estado === 'resuelta' || incidencia.estado === 'terminada' ? 'estado-resuelta' : incidencia.estado === 'en_proceso' || incidencia.estado === 'en proceso' ? 'estado-en-proceso' : 'estado-pendiente'">
             {{ incidencia.estado }}
           </ion-badge>
 

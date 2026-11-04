@@ -1,24 +1,27 @@
 .custom-tab-bar {
-  --background: #ffffff;
-  --border: 1px solid #e2e8f0;
-  height: calc(62px + env(safe-area-inset-bottom));
+  --background: #fffefa;
+  --border: 1px solid #e4e0d6;
+  height: calc(65px + env(safe-area-inset-bottom));
   padding: 5px 4px calc(5px + env(safe-area-inset-bottom));
-  box-shadow: 0 -5px 22px rgba(22, 43, 78, 0.08);
+  box-shadow: 0 -5px 20px rgba(48, 49, 40, .075);
+}
 
-  ion-tab-button {
-    --color: #64748b;
-    --color-selected: #2457c5;
-    font-weight: 500;
-    font-size: 0.75rem;
+.custom-tab-bar ion-tab-button {
+  --color: #85877f;
+  --color-selected: #792c32;
+  font-size: .73rem;
+  font-weight: 700;
+}
 
-    ion-icon {
-      font-size: 21px;
-    }
+.custom-tab-bar ion-tab-button ion-icon {
+  font-size: 21px;
+}
 
-    /* Destacar el botón central de Registro */
-    .icon-central {
-      font-size: 27px;
-      color: #2457c5;
-    }
-  }
+.custom-tab-bar ion-tab-button.tab-selected {
+  --color: #792c32;
+}
+
+.custom-tab-bar .icon-central {
+  color: #b18a55;
+  font-size: 27px;
 }

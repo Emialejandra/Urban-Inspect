@@ -118,10 +118,12 @@ export class SeguimientoPage{
     switch (esatdo?.toLowerCase()) {
       case 'resuelta':
       case 'resuelto':
+      case 'terminada':
         return 'success';
 
       case 'en proceso':
-        return 'warning';
+      case 'en_proceso':
+        return 'tertiary';
 
       default:
         return 'medium';

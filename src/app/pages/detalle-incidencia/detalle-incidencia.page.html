@@ -9,6 +9,7 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <div class="detalle-container">
 
   <!-- Cargando información -->
   <div *ngIf="cargando" class="centrado">
@@ -33,11 +34,11 @@
     </ion-chip>
 
     <ion-chip
-      [color]="item.estado === 'resuelta' || item.estado === 'terminada'
-        ? 'success'
-        : item.estado === 'en_proceso'
-        ? 'warning'
-        : 'medium'">
+      [ngClass]="item.estado === 'resuelta' || item.estado === 'terminada'
+        ? 'estado-resuelta'
+        : item.estado === 'en_proceso' || item.estado === 'en proceso'
+        ? 'estado-en-proceso'
+        : 'estado-pendiente'">
       {{ item.estado || 'pendiente' }}
     </ion-chip>
 
@@ -107,4 +108,5 @@
 
   </ng-container>
 
+  </div>
 </ion-content>

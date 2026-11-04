@@ -71,113 +71,159 @@
       </ion-select>
     </ion-item>
 
-    <!-- Ubicación -->
-    <ion-item>
-      <ion-input
-        label="Ubicación"
-        labelPlacement="stacked"
-        placeholder="Calle, sector o referencia"
-        [(ngModel)]="ubicacion"
-        (ngModelChange)="guardarBorradorAutomatico()">
-      </ion-input>
-    </ion-item>
-
-    <!-- Botón GPS -->
-    <ion-button
-      expand="block"
-      fill="outline"
-      type="button"
-      [disabled]="obteniendoUbicacion || consultandoClima"
-      (click)="usarMiUbicacion()"
-      (ngModelChange)="guardarBorradorAutomatico()">
-
-      <ion-icon name="locate-outline" slot="start"></ion-icon>
-
-      <span *ngIf="!obteniendoUbicacion">
-        Usar mi ubicación actual
-      </span>
-
-      <span *ngIf="obteniendoUbicacion">
-        Obteniendo ubicación...
-      </span>
-    </ion-button>
-
-    <!-- Información meteorológica -->
-    <div class="clima-card">
-      <h3>
-        <span aria-hidden="true">🌦️</span>
-        Condiciones meteorológicas
-      </h3>
-
-      <!-- Cargando clima -->
-      <div
-        *ngIf="consultandoClima"
-        class="aviso-clima">
-
-        <ion-spinner name="crescent"></ion-spinner>
-        <p>Consultando el clima de tu ubicación...</p>
-      </div>
-
-      <!-- Datos del clima -->
-      <ng-container *ngIf="clima as datosClima">
-
-        <ion-item>
-          <ion-label>
-            <h2> Temperatura actual</h2>
-            <p>{{ datosClima.temperatura }} °C</p>
-          </ion-label>
-        </ion-item>
-
-        <ion-item>
-          <ion-label>
-            <h2> Precipitación en la última hora</h2>
-            <p>{{ datosClima.precipitacion }} mm</p>
-          </ion-label>
-        </ion-item>
-
-        <ion-item>
-          <ion-label>
-            <h2> Condición del clima</h2>
-            <p>{{ datosClima.descripcion }}</p>
-          </ion-label>
-        </ion-item>
-
-        <!-- Advertencia por lluvia -->
-        <div
-          *ngIf="datosClima.precipitacion > 5"
-          class="alerta-lluvia">
-
-          <span aria-hidden="true"></span>
-
-          <p>
-            La precipitación supera los 5 mm.
-            El mantenimiento podría presentar dificultades.
-          </p>
-        </div>
-      </ng-container>
-
-      <!-- Error o falta de información meteorológica -->
-      <div
-        *ngIf="climaConsultado && !clima && !consultandoClima"
-        class="aviso-clima">
-
-        <p>
-           No se pudo obtener la información meteorológica.
-          Puedes continuar con el registro.
-        </p>
-      </div>
-
-      <!-- Estado inicial -->
-      <p
-        *ngIf="!coordenadas && !consultandoClima
-          && !climaConsultado && !obteniendoUbicacion"
-        class="aviso-clima">
-
-        Obtén tu ubicación actual para consultar las condiciones
-        meteorológicas. Si no es posible consultar el clima,
-        podrás continuar con el registro.
-      </p>
+    
+<!-- TARJETA DE UBICACIÓN -->
+<div class="tarjeta-seccion ubicacion-card">
+  <div class="tarjeta-encabezado">
+    <div class="icono-seccion icono-ubicacion">
+      <ion-icon name="location-outline"></ion-icon>
     </div>
+
+    <div class="encabezado-texto">
+      <h2>Ubicación de la incidencia</h2>
+      <p>Registra dónde se encuentra el problema.</p>
+    </div>
+  </div>
+
+  <ion-button
+    expand="block"
+    class="boton-gps"
+    (click)="usarMiUbicacion()"
+    [disabled]="obteniendoUbicacion">
+    <ion-spinner
+      *ngIf="obteniendoUbicacion"
+      name="crescent">
+    </ion-spinner>
+
+    <ion-icon
+      *ngIf="!obteniendoUbicacion"
+      name="navigate-outline"
+      slot="start">
+    </ion-icon>
+
+    {{ obteniendoUbicacion ? 'Obteniendo ubicación...' : 'Obtener mi ubicación GPS' }}
+  </ion-button>
+
+  <div class="separador-ubicacion">
+    <span>O ingresa las coordenadas manualmente</span>
+  </div>
+
+  <div class="coordenadas-grid">
+    <div class="campo-coordenada">
+      <ion-label>Latitud</ion-label>
+      <ion-item lines="none">
+        <ion-input
+          type="number"
+          inputmode="decimal"
+          placeholder="-0.1807"
+          [(ngModel)]="latitudManual"
+          (ngModelChange)="actualizarCoordenadasManuales()">
+        </ion-input>
+      </ion-item>
+    </div>
+
+    <div class="campo-coordenada">
+      <ion-label>Longitud</ion-label>
+      <ion-item lines="none">
+        <ion-input
+          type="number"
+          inputmode="decimal"
+          placeholder="-78.4678"
+          [(ngModel)]="longitudManual"
+          (ngModelChange)="actualizarCoordenadasManuales()">
+        </ion-input>
+      </ion-item>
+    </div>
+  </div>
+
+  <div class="estado-coordenadas" *ngIf="coordenadas">
+    <ion-icon name="checkmark-circle-outline"></ion-icon>
+    <span>Coordenadas válidas registradas</span>
+  </div>
+
+  <p class="ayuda-coordenadas">
+    Puedes utilizar el GPS o ingresar manualmente las coordenadas.
+    La latitud debe estar entre -90 y 90, y la longitud entre -180 y 180.
+  </p>
+</div>
+
+
+<!-- TARJETA DE CLIMA -->
+<div class="tarjeta-seccion clima-card">
+  <div class="tarjeta-encabezado">
+    <div class="icono-seccion icono-clima">
+      <ion-icon name="partly-sunny-outline"></ion-icon>
+    </div>
+
+    <div class="encabezado-texto">
+      <h2>Condiciones climáticas</h2>
+      <p>Consulta el clima de la ubicación registrada.</p>
+    </div>
+  </div>
+
+  <ion-button
+    expand="block"
+    class="boton-clima"
+    (click)="consultarClima()"
+    [disabled]="consultandoClima || !coordenadas">
+
+    <ion-spinner
+      *ngIf="consultandoClima"
+      name="crescent">
+    </ion-spinner>
+
+    <ion-icon
+      *ngIf="!consultandoClima"
+      name="cloud-download-outline"
+      slot="start">
+    </ion-icon>
+
+    {{ consultandoClima ? 'Consultando clima...' : 'Consultar clima' }}
+  </ion-button>
+
+  <div class="mensaje-clima-inicial" *ngIf="!clima && !consultandoClima">
+    <ion-icon name="information-circle-outline"></ion-icon>
+    <p>
+      Primero registra las coordenadas y después consulta las condiciones
+      climáticas.
+    </p>
+  </div>
+
+  <div class="clima-resultados" *ngIf="clima">
+    <div class="clima-principal">
+      <ion-icon name="thermometer-outline"></ion-icon>
+      <div>
+        <span>Temperatura</span>
+        <strong>{{ clima.temperatura }} °C</strong>
+      </div>
+    </div>
+
+    <div class="clima-datos">
+      <div class="dato-clima">
+        <ion-icon name="cloud-outline"></ion-icon>
+        <span>Condición</span>
+        <strong>{{ clima.descripcion }}</strong>
+      </div>
+
+      <div class="dato-clima">
+        <ion-icon name="rainy-outline"></ion-icon>
+        <span>Precipitación</span>
+        <strong>{{ clima.precipitacion }} mm</strong>
+      </div>
+    </div>
+
+    <div
+      class="alerta-lluvia"
+      *ngIf="clima.precipitacion > 5">
+      <ion-icon name="warning-outline"></ion-icon>
+      <span>
+        Se detecta una precipitación superior a 5 mm. Ten precaución
+        al registrar la incidencia.
+      </span>
+    </div>
+  </div>
+</div>
+
 
     <!-- Fotografía -->
     <div class="fotografia">

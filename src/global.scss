@@ -1,255 +1,101 @@
 :root {
-  --ion-background-color: #f4f7fb;
-  --ion-text-color: #172033;
-  --ion-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-
-  --ion-color-primary: #2457c5;
-  --ion-color-primary-rgb: 36, 87, 197;
+  --ion-font-family: 'Inter', 'Segoe UI', Roboto, Arial, sans-serif;
+  --ion-color-primary: #792c32;
+  --ion-color-primary-rgb: 121, 44, 50;
   --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #204cac;
-  --ion-color-primary-tint: #3b68ca;
+  --ion-color-primary-contrast-rgb: 255,255,255;
+  --ion-color-primary-shade: #6a272c;
+  --ion-color-primary-tint: #884149;
+  --ion-color-secondary: #b18a55;
+  --ion-color-secondary-rgb: 177,138,85;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-shade: #9c794b;
+  --ion-color-secondary-tint: #bb986b;
+  --ion-color-tertiary: #52645a;
+  --ion-color-tertiary-rgb: 82,100,90;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-shade: #48584f;
+  --ion-color-tertiary-tint: #63746a;
+  --ion-color-success: #287653;
+  --ion-color-success-rgb: 40,118,83;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-shade: #236849;
+  --ion-color-success-tint: #3e8564;
+  --ion-color-warning: #a96d16;
+  --ion-color-warning-rgb: 169,109,22;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-shade: #955f13;
+  --ion-color-warning-tint: #b27d2d;
+  --ion-color-danger: #a33e3e;
+  --ion-color-danger-rgb: 163,62,62;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-shade: #8f3636;
+  --ion-color-danger-tint: #ad5555;
+  --ion-color-medium: #777b72;
+  --ion-color-medium-rgb: 119,123,114;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-background-color: #f3f1eb;
+  --ion-background-color-rgb: 243,241,235;
+  --ion-text-color: #292e29;
+  --ion-text-color-rgb: 41,46,41;
+  --ion-card-background: #fffefa;
+  --ion-toolbar-background: #343b35;
+  --ion-toolbar-color: #ffffff;
+  --ion-item-background: #fffefa;
+  --ion-border-color: #e4e0d6;
+  --app-maroon: #792c32;
+  --app-charcoal: #343b35;
+  --app-gold: #b18a55;
+  --app-cream: #f3f1eb;
+  --app-muted: #777b72;
 }
-
-html,
-body {
-  background: #f4f7fb;
-  color: #172033;
-  font-family: var(--ion-font-family);
-}
-
-ion-app {
-  background: #f4f7fb;
-}
-
-ion-content {
-  --background: #f4f7fb;
-  --color: #172033;
-}
-
-ion-toolbar {
-  --border-style: solid;
-  --border-color: #e2e8f0;
-}
-
-ion-toolbar[color="primary"] {
-  --background: var(--ion-color-primary);
-  --color: var(--ion-color-primary-contrast);
-}
-
-ion-button[color="primary"] {
-  --background: #2457c5;
-  --color: #ffffff;
-  --background-hover: #1d469e;
-  --background-activated: #1d469e;
-}
-
-ion-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.2px;
-}
-
-ion-list {
-  background: transparent;
-  padding: 0;
-}
-
-ion-card {
-  margin: 12px 0;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
-}
-
-ion-button {
-  --border-radius: 10px;
-  font-weight: 600;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-ion-badge {
-  border-radius: 20px;
-  padding: 6px 10px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-
-/* ========================================
-   URBAN-INSPECT | TEMA EJECUTIVO
-   ======================================== */
-
-body {
-  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-  background: #f4f3ef;
-  color: #252b25;
-}
-
-ion-content {
-  --background: #f4f3ef;
-  --color: #252b25;
-}
-
+html, body, ion-app { background: var(--app-cream); color: var(--ion-text-color); font-family: var(--ion-font-family); }
+ion-content { --background: var(--app-cream); --color: var(--ion-text-color); }
 ion-header ion-toolbar {
-  --background: #465445;
-  --color: #ffffff;
-  --border-width: 0;
-  --min-height: 58px;
+  --background: var(--app-charcoal); --color: #fff; --border-width: 0;
+  --min-height: 62px; box-shadow: 0 3px 12px rgba(35,39,34,.12);
 }
-
-ion-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: 0.1px;
-}
-
+ion-title { font-size: 1.04rem; font-weight: 750; letter-spacing: .15px; }
 ion-card {
-  margin: 12px 0;
-  border: 1px solid #e5e5de;
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 5px 18px rgba(37, 43, 37, 0.045);
+  margin: 12px 0; border: 1px solid #e7e2d8; border-radius: 17px;
+  background: #fffefa; box-shadow: 0 5px 18px rgba(48,49,40,.055);
 }
-
-ion-card-title {
-  color: #30392f;
-  font-size: 1.05rem;
-  font-weight: 750;
-}
-
-ion-card-content {
-  color: #62695f;
-  line-height: 1.6;
-}
-
-ion-button {
-  --border-radius: 11px;
-  font-weight: 650;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-ion-button[expand="block"] {
-  min-height: 46px;
-  margin-top: 12px;
-  margin-bottom: 12px;
-}
-
+ion-card-title { color: #343b35; font-size: 1.04rem; font-weight: 750; }
+ion-card-content { color: #62675f; line-height: 1.55; }
 ion-item {
-  --background: #ffffff;
-  --color: #252b25;
-  --border-color: #e1e2da;
-  --highlight-color-focused: #465445;
-  --highlight-color-valid: #465445;
-  --border-radius: 10px;
+  --background: #fffefa; --color: #292e29; --border-color: #e4e0d6;
+  --highlight-color-focused: var(--app-maroon); --highlight-color-valid: #287653;
 }
-
-ion-input,
-ion-textarea,
-ion-select {
-  --color: #252b25;
-  --placeholder-color: #898d84;
-  --highlight-color-focused: #465445;
+ion-input, ion-textarea, ion-select {
+  --color: #292e29; --placeholder-color: #96968e;
+  --highlight-color-focused: var(--app-maroon);
 }
-
-ion-label {
-  color: #41483f;
+ion-label { color: #41483f; }
+ion-list { background: transparent; padding: 0; }
+ion-button {
+  --border-radius: 11px; font-weight: 700; letter-spacing: .1px;
+  text-transform: none; min-height: 40px;
 }
+ion-button[expand="block"] { min-height: 47px; }
+ion-button[color="secondary"] { --background: var(--app-gold); --color: #fff; }
+ion-badge, ion-chip { font-weight: 750; letter-spacing: .1px; }
+ion-badge { border-radius: 9px; padding: 7px 10px; }
+ion-chip { border-radius: 9px; min-height: 29px; }
+ion-searchbar { --background:#fffefa; --color:#292e29; --placeholder-color:#96968e; --border-radius:12px; --box-shadow:0 2px 9px rgba(48,49,40,.05); }
+ion-spinner { color: var(--app-maroon); }
+ion-modal { --border-radius: 20px; }
+ion-alert { --backdrop-opacity:.42; --button-color:var(--app-maroon); }
 
-ion-tab-bar {
-  --background: #ffffff;
-  --color: #7a8076;
-  --color-selected: #465445;
-  border-top: 1px solid #e1e2da;
-  padding-top: 5px;
-  padding-bottom: 5px;
+/* Colores semánticos de estado: usar con ngClass */
+.estado-pendiente { --background:#fff0d2 !important; --color:#87530b !important; background:#fff0d2 !important; color:#87530b !important; border:1px solid #efd49d !important; }
+.estado-en-proceso { --background:#dceaf0 !important; --color:#285b70 !important; background:#dceaf0 !important; color:#285b70 !important; border:1px solid #bfd6e0 !important; }
+.estado-resuelta { --background:#dceee3 !important; --color:#216443 !important; background:#dceee3 !important; color:#216443 !important; border:1px solid #bfdfca !important; }
+.estado-terminada { --background:#dceee3 !important; --color:#216443 !important; background:#dceee3 !important; color:#216443 !important; border:1px solid #bfdfca !important; }
+.estado-desconocido { --background:#ecece7 !important; --color:#60645d !important; background:#ecece7 !important; color:#60645d !important; border:1px solid #dcded5 !important; }
+
+ion-tab-bar { --background:#fffefa; --color:#777b72; --color-selected:var(--app-maroon); border-top:1px solid #e4e0d6; }
+@media (max-width:480px) {
+  ion-title { font-size:.98rem; }
+  ion-card { margin:10px 0; border-radius:15px; }
+  ion-card-content { font-size:.91rem; }
 }
-
-ion-tab-button {
-  font-size: 0.74rem;
-  font-weight: 600;
-}
-
-ion-list {
-  background: transparent;
-}
-
-ion-list-header {
-  color: #30392f;
-  font-weight: 750;
-}
-
-ion-modal {
-  --border-radius: 18px;
-}
-
-ion-alert {
-  --backdrop-opacity: 0.42;
-  --button-color: #465445;
-}
-
-ion-spinner {
-  color: #465445;
-}
-
-ion-searchbar {
-  --background: #ffffff;
-  --color: #252b25;
-  --placeholder-color: #898d84;
-  --icon-color: #74776c;
-  --border-radius: 12px;
-  --box-shadow: 0 2px 10px rgba(37, 43, 37, 0.04);
-}
-
-ion-chip {
-  font-size: 0.78rem;
-  font-weight: 650;
-}
-
-@media (max-width: 480px) {
-  ion-title {
-    font-size: 0.98rem;
-  }
-
-  ion-card {
-    margin: 10px 0;
-    border-radius: 13px;
-  }
-
-  ion-card-content {
-    font-size: 0.9rem;
-  }
-}
-
-
-/* Estados de las incidencias */
-
-.estado-pendiente {
-  --background: #fff0d5 !important;
-  --color: #87570e !important;
-  background: #fff0d5 !important;
-  color: #87570e !important;
-  border: 1px solid #f0d8a9;
-  font-weight: 700;
-}
-
-.estado-en-proceso {
-  --background: #dcebe5 !important;
-  --color: #28634f !important;
-  background: #dcebe5 !important;
-  color: #28634f !important;
-  border: 1px solid #c1ddd0;
-  font-weight: 700;
-}
-
-.estado-terminada {
-  --background: #e5e7eb !important;
-  --color: #374151 !important;
-  background: #e5e7eb !important;
-  color: #374151 !important;
-  border: 1px solid #d1d5db;
-  font-weight: 700;
-}
-
